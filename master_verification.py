@@ -280,8 +280,8 @@ def main():
                     key_press=cv2.waitKey(1)
                     time.sleep(.008)
                     new_asset=False
-                    for ass in data[str(frameNo)]:
-                        for items in data[str(frameNo)][ass]:
+                    for ass in data[str(output_frame)]:
+                        for items in data[str(output_frame)][ass]:
                             if str(items[0])+ass not in asset_seen:
                                 asset_seen.add(str(items[0])+ass)
                                 new_asset=True
