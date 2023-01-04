@@ -15,6 +15,7 @@ LAYOUT DESIGN
 
 # assets_list = ['LEFT_Signboard_Caution_Board', 'RIGHT_Signboard_Caution_Board', 'LEFT_Signboard_Chevron_Board', 'RIGHT_Signboard_Chevron_Board', 'LEFT_Signboard_Gantry_Board', 'RIGHT_Signboard_Gantry_Board', 'LEFT_Signboard_Hazard_board', 'RIGHT_Signboard_Hazard_board', 'LEFT_Signboard_Information_Board', 'RIGHT_Signboard_Information_Board', 'LEFT_Signboard_Mandatory_Board', 'RIGHT_Signboard_Mandatory_Board', 'LEFT_VMS_Gantry', 'RIGHT_VMS_Gantry', 'LEFT_Delineator', 'RIGHT_Delineator', 'LEFT_ECB_(SOS)', 'RIGHT_ECB_(SOS)', 'LEFT_Encroachment', 'RIGHT_Encroachment', 'LEFT_Hectometer_stone', 'RIGHT_Hectometer_stone', 'LEFT_Kilometer_Stone', 'RIGHT_Kilometer_Stone', 'LEFT_Solar_blinker', 'RIGHT_Solar_blinker', 'LEFT_Double_Arm_Street_Light', 'RIGHT_Double_Arm_Street_Light', 'LEFT_Pot_Holes', 'RIGHT_Pot_Holes', 'LEFT_Street_Light_Slanding', 'RIGHT_Street_Light_Slanding', 'LEFT_Single_Arm_Light_Slanting', 'RIGHT_Single_Arm_Light_Slanting', 'LEFT_High_Mast_Light', 'RIGHT_High_Mast_Light', 'Chainage']
 global CSV
+
 CSV=None
 PLAY=True
 column=''
@@ -63,7 +64,6 @@ def addBBox(im, frameNo,data):
         data[str(frameNo)]={}
     for ass in data[str(frameNo)]:
         for items in data[str(frameNo)][ass]:
-
             draw_bounding_box(im, (items[1][0],items[1][1],items[2][0],items[2][1]), labels=[items[0], ass], color='green') 
     return im
 
@@ -92,6 +92,7 @@ def addtoJSON(frameNo, asset, bbox,data):
 
 def main():
     # Select Color Theme
+    asset_seen={}
     sg.theme('DarkTeal10')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip') ]])]]
     # Frame windows
@@ -262,6 +263,7 @@ def main():
             if event == 'PLAY':
                 ret=True 
                 PAUSE=False
+                asset_seen={}
                 while True:
                     if not PAUSE:
                         output_frame+=2
@@ -276,8 +278,14 @@ def main():
                     cv2.imshow("OUT",frame)
 
                     key_press=cv2.waitKey(1)
-                    time.sleep(.015)
-                    if key_press & 0xff==ord(' '):
+                    time.sleep(.008)
+                    new_asset=False
+                    for ass in data[str(frameNo)]:
+                        for items in data[str(frameNo)][ass]:
+                            if str(items[0])+ass not in asset_seen:
+                                asset_seen.add(str(items[0])+ass)
+                                new_asset=True
+                    if key_press & 0xff==ord(' ') or new_asset:
                         PAUSE=not PAUSE
 
                     if not ret or key_press & 0xff==27:
