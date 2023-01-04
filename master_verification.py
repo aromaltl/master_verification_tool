@@ -119,7 +119,7 @@ def main():
 
         if len(event) == 1:
             print(ord(event))
-            # 97=='a', 100=='d' 115=='s'
+
             if ord(event)==97 or ord(event)==100 or ord(event)==115:
                 # print(ord(event))
                 letter = ord(event)
@@ -286,8 +286,10 @@ def main():
                 window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))    
                 cv2.destroyWindow("OUT")
             output_frame=(min(output_frame,total_frames-1)//2)*2
-            ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
-            ret, frame = cap.read()
+            # faster next frame
+            if event != 'NEXT' and event != 'Right:114':
+                ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
+                ret, frame = cap.read()
             
             window["slider"].update(value=output_frame)
             Input.update(value=output_frame)
