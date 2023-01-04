@@ -92,7 +92,7 @@ def addtoJSON(frameNo, asset, bbox,data):
 
 def main():
     # Select Color Theme
-    asset_seen={}
+   
     sg.theme('DarkTeal10')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip') ]])]]
     # Frame windows
@@ -263,7 +263,7 @@ def main():
             if event == 'PLAY':
                 ret=True 
                 PAUSE=False
-                asset_seen={}
+                asset_seen=set()
                 while True:
                     if not PAUSE:
                         output_frame+=2
