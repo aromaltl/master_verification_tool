@@ -111,7 +111,7 @@ def main():
     while True:
         letter = None
         event, values = window.read()
-        print(event,values)
+        # print(event,values)
         if event=='slider':
             output_frame=int(int(values['slider'])//2)*2
             window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
@@ -210,7 +210,7 @@ def main():
                     data[str(output_frame)]={}
                 window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
 
-            if event == 'PREVIOUS' or event == 'Left:113' or "Left:37" :
+            if event == 'PREVIOUS' or event == 'Left:113' or event =="Left:37" :
                 
                 output_frame = max(0,int(output_frame) - 2)
                 if str(output_frame) not in data:
