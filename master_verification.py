@@ -92,7 +92,10 @@ def addtoJSON(frameNo, asset, bbox,data):
 
 def main():
     # Select Color Theme
-   
+    try:
+        os.mkdir("SavedImages")
+    except:
+        pass
     sg.theme('DarkTeal10')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip') ]])]]
     # Frame windows
@@ -192,7 +195,7 @@ def main():
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
                 ret, frame = cap.read()
                 frame = addBBox(frame, output_frame,data)
-                cv2.imwrite(os.path.basename(ip)+'_'+str(output_frame)+'.jpeg', frame)
+                cv2.imwrite("SavedImages/"+os.path.basename(ip)+'_'+str(output_frame)+'.jpeg', frame)
 
 
             if event == 'Select1':
