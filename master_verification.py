@@ -111,6 +111,7 @@ def main():
     while True:
         letter = None
         event, values = window.read()
+        print(event,values)
         if event=='slider':
             output_frame=int(int(values['slider'])//2)*2
             window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
@@ -200,7 +201,7 @@ def main():
             if event =='Select2':
                 delete_val=values['Delete_drop']
             
-            if event == 'NEXT' or event == 'Right:114':
+            if event == 'NEXT' or event == 'Right:114' or event == "Right:39":
                 output_frame = int(output_frame) + 2
                 cap.read()
                 ret, frame = cap.read()
@@ -209,7 +210,7 @@ def main():
                     data[str(output_frame)]={}
                 window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
 
-            if event == 'PREVIOUS' or event == 'Left:113' :
+            if event == 'PREVIOUS' or event == 'Left:113' or "Left:37" :
                 
                 output_frame = max(0,int(output_frame) - 2)
                 if str(output_frame) not in data:
@@ -295,7 +296,7 @@ def main():
                 cv2.destroyWindow("OUT")
             output_frame=(min(output_frame,total_frames-1)//2)*2
             # faster next frame
-            if event != 'NEXT' and event != 'Right:114':
+            if event != 'NEXT' and event != 'Right:114' and event != 'Right:39':
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
                 ret, frame = cap.read()
             
