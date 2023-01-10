@@ -53,7 +53,7 @@ def asset_select_window(keys,cols):
     keys=keys+[""]*(cols-r)
     n=len(keys)//cols
     for hh in range(n):
-        layout.append([sg.Button(keys[x+hh*cols],size=(28, 1),pad=(0,0)) for x in range(cols)])
+        layout.append([sg.Button(keys[x+hh*cols],size=(24, 1),pad=(0,0)) for x in range(cols)])
     win = sg.Window("Select Asset", layout,resizable=True,finalize=True,enable_close_attempted_event=True)
     win.hide()
     return win
