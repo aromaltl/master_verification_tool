@@ -19,6 +19,7 @@ global CSV
 CSV=None
 PLAY=True
 column=''
+
 col11 = sg.Image(filename='bg2.png', key='image') # Coloumn 1 = Image view
 Output = sg.Text()
 Input = sg.Text()
@@ -35,7 +36,8 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
             [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key= 'skip')],
             [sg.Button('Go', size=(18, 1))],
             [sg.Text('MODIFY CSV')],
-            [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
+            # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
+            [sg.Button('Add Data', size=(15, 1))],
             [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Delete_drop'), sg.Button('Select2')],
             [sg.Text('Buttons')],
             [sg.Button('START', size=(15, 1)),sg.Button('STOP', size=(15, 1))],
@@ -44,7 +46,17 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
             [sg.Button('SAVE FRAME', size=(15, 1)),sg.Button('EXIT', size=(15, 1)),sg.Text('', key = 'text'),Output,sg.Text('Input frame no is: '),Input]]
 
 # Join two columns
-
+def asset_select_window(keys,cols):
+    layout=[]
+    d=len(keys)
+    r=d%cols
+    keys=keys+[""]*(cols-r)
+    n=len(keys)//cols
+    for hh in range(n):
+        layout.append([sg.Button(keys[x+hh*cols],size=(28, 1),pad=(0,0)) for x in range(cols)])
+    win = sg.Window("Select Asset", layout,resizable=True,finalize=True,enable_close_attempted_event=True)
+    win.hide()
+    return win
 
 def save_json(data,CSV):
     with open(CSV, "w") as outfile:
@@ -118,7 +130,6 @@ def main():
         if event=='slider':
             output_frame=int(int(values['slider'])//2)*2
             window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
-        
             
         text_elem = window['text']
 
@@ -144,9 +155,6 @@ def main():
             ip = values['-IN-']
             CSV = values['CSV']
             data=load_json(CSV)
-            dir_name = str(os.getcwd()) + '/dataset/' + str(os.path.splitext(os.path.basename(ip))[0])
-            if not os.path.exists(dir_name):
-                os.makedirs(dir_name)
 
         if event == 'START':
             if len(ip)>0 and len(CSV )>0:
@@ -163,7 +171,9 @@ def main():
                         x=int(x)
                     except:
                         assets.append(x)
-                window.FindElement('Coloumn').Update(values = assets)
+                # window.FindElement('Coloumn').Update(values = assets)
+                assets.sort(key=lambda strings:len(strings),reverse=True)
+                asset_window=asset_select_window(assets,6)
                 window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
                 
                 stream = True
@@ -180,7 +190,12 @@ def main():
 
         if stream:
 
-            if event=='Add Data' and len(column):
+            if event=='Add Data':
+                asset_window.UnHide()
+                column = asset_window.read()[0]
+                asset_window.hide()
+                if column =="-WINDOW CLOSE ATTEMPTED-" or len(column)==0:
+                    continue
                 cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
                 ret, frame = cap.read()
                 r = cv2.selectROI("select the area", frame)
@@ -196,10 +211,7 @@ def main():
                 ret, frame = cap.read()
                 frame = addBBox(frame, output_frame,data)
                 cv2.imwrite("SavedImages/"+os.path.basename(ip)+'_'+str(output_frame)+'.jpeg', frame)
-
-
-            if event == 'Select1':
-                column = values['Coloumn']
+              
 
             if event =='Select2':
                 delete_val=values['Delete_drop']
