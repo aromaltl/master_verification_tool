@@ -8,7 +8,7 @@ import ast
 import json
 import time
 from opencv_draw_annotation import draw_bounding_box
-
+from upload import converting_to_asset_format,generate,upload_confirmation
 """
 LAYOUT DESIGN
 """
@@ -29,21 +29,21 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
             [sg.Text('Input video Path', size=(18, 1)), sg.InputText('', key= '-IN-'), sg.FileBrowse()],
             [sg.Text('Normalized CSV File ', size=(18, 1)), sg.InputText('', key= 'CSV'), sg.FileBrowse()],
             [sg.Button('Submit Videos')],
-            [sg.Text('ENTER FRAME NUMBER TO SAVE MULTIPLE FRAMES')],
+            [sg.Text('VIDEO PLAY')],
             [sg.Button('PLAY', size=(18, 1))],
-            [sg.Button('Save Multiple Frames')],
             [sg.Text('ENTER FRAME NUMBER TO JUMP IN')],
             [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key= 'skip')],
             [sg.Button('Go', size=(18, 1))],
-            [sg.Text('MODIFY CSV')],
+            [sg.Text('MODIFY MASTER')],
             # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
             [sg.Button('Add Data', size=(15, 1))],
             [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Delete_drop'), sg.Button('Select2')],
-            [sg.Text('Buttons')],
+            [sg.Text('NAVIGATE')],
             [sg.Button('START', size=(15, 1)),sg.Button('STOP', size=(15, 1))],
 
-            [sg.Button('PREVIOUS', size=(15, 1)),sg.Button('NEXT', size=(15, 1))], [sg.Text('Define the power here:', size=(18, 1)), sg.InputText('', key= 'Power'),sg.Button('POWER')],
-            [sg.Button('SAVE FRAME', size=(15, 1)),sg.Button('EXIT', size=(15, 1)),sg.Text('', key = 'text'),Output,sg.Text('Input frame no is: '),Input]]
+            [sg.Button('PREVIOUS', size=(15, 1)),sg.Button('NEXT', size=(15, 1))],
+            [sg.Text('Click to upload : ', size=(18, 1)),sg.Button('Upload')],
+            [sg.Button('SAVE FRAME', size=(15, 1)),sg.Button('EXIT', size=(15, 1)),sg.Text('', key = 'text'),Output,sg.Text('Frame no: '),Input]]
 
 # Join two columns
 def asset_select_window(keys,cols):
@@ -232,6 +232,12 @@ def main():
                     data[str(output_frame)]={}
                 window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
                 
+            if event =="Upload":
+                CONFIRM,wait=upload_confirmation()
+                if CONFIRM:
+                    asset_format=converting_to_asset_format(data,total_frames)
+                    generate(cap,asset_format,ip)
+                wait.close()
 
             
             if event == 'Delete Data' and len(delete_val):
@@ -239,7 +245,6 @@ def main():
                 for x in range(output_frame,total_frames-1):
                     if x%2==1:
                         continue
-
                     x=str(x)
                     if x not in data:
                         data[x]={}
