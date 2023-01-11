@@ -58,7 +58,7 @@ def generate(cap,data,video_name):
                 Asset="RIGHT_"+asset
             else:
                 Asset="LEFT_"+asset
-            print(ids)
+            # print(ids)
             final_json["Assets"].append([Asset,int(ids),int(val[0]),val[1],val[2]])
             cap.set(1,int(val[0]))
             ret,frame=cap.read()

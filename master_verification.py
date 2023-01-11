@@ -129,7 +129,7 @@ def main():
         # print(event,values)
         if event=='slider':
             output_frame=int(int(values['slider'])//2)*2
-            window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
+            window['Delete_drop'].Update(values = drop_down_list(output_frame,data))
             
         text_elem = window['text']
 
@@ -174,7 +174,7 @@ def main():
                 # window.FindElement('Coloumn').Update(values = assets)
                 assets.sort(key=lambda strings:len(strings),reverse=True)
                 asset_window=asset_select_window(assets,6)
-                window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
+                window['Delete_drop'].Update(values = drop_down_list(output_frame,data))
                 
                 stream = True
 
@@ -203,7 +203,7 @@ def main():
                 addtoJSON(output_frame, column, [(r[0], r[1]), (r[2]+r[0],r[3]+r[1])],data)
                 frame = addBBox(frame, output_frame,data)
                 save_json(data,CSV)
-                window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
+                window['Delete_drop'].Update(values = drop_down_list(output_frame,data))
 
 
             if event == 'SAVE FRAME' or letter == 83:
@@ -223,14 +223,14 @@ def main():
 
                 if str(output_frame) not in data:
                     data[str(output_frame)]={}
-                window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
+                window['Delete_drop'].Update(values = drop_down_list(output_frame,data))
 
             if event == 'PREVIOUS' or event == 'Left:113' or event =="Left:37" :
                 
                 output_frame = max(0,int(output_frame) - 2)
                 if str(output_frame) not in data:
                     data[str(output_frame)]={}
-                window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
+                window['Delete_drop'].Update(values = drop_down_list(output_frame,data))
                 
             if event =="Upload":
                 CONFIRM,wait=upload_confirmation()
@@ -278,7 +278,7 @@ def main():
                         break
                 save_json(data,CSV)
                 delete_val=""
-                window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))
+                window['Delete_drop'].Update(values = drop_down_list(output_frame,data))
                 
 
             if event == 'PLAY':
@@ -312,7 +312,7 @@ def main():
                     if not ret or key_press & 0xff==27:
                         break
 
-                window.FindElement('Delete_drop').Update(values = drop_down_list(output_frame,data))    
+                window['Delete_drop'].Update(values = drop_down_list(output_frame,data))    
                 cv2.destroyWindow("OUT")
             output_frame=(min(output_frame,total_frames-1)//2)*2
             # faster next frame
