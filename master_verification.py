@@ -118,20 +118,18 @@ def main():
         os.mkdir("SavedImages")
     except:
         pass
-    sg.theme('DarkTeal10')
+    sg.theme('DarkGrey5')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip')]])]]
     # Frame windows
     window = sg.Window('Data Verification Toolbox',
                        layout, resizable=True, finalize=True, return_keyboard_events=True, use_default_focus=False)
-    # values[0]
-    Power_value = 1
+
     window.finalize()
     stream = False
     output_frame = 0
-    input_frame = 0
+
     ip = ''
-    op = ''
-    assets = []
+
 
     while True:
         letter = None
