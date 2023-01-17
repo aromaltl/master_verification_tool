@@ -312,6 +312,7 @@ def main():
                 ret = True
                 PAUSE = False
                 asset_seen = set()
+                cv2.namedWindow("OUT",cv2.WINDOW_NORMAL)
                 while True:
                     new_asset = False
                     if not PAUSE:
