@@ -21,6 +21,7 @@ CSV = None
 PLAY = True
 column = ''
 
+
 col11 = sg.Image(filename='bg2.png', key='image')  # Coloumn 1 = Image view
 Output = sg.Text()
 Input = sg.Text()
@@ -127,6 +128,7 @@ def main():
     window.finalize()
     stream = False
     output_frame = 0
+    Shift=False
 
     ip = ''
 
@@ -134,7 +136,9 @@ def main():
     while True:
         letter = None
         event, values = window.read()
+
         # print(event,values)
+        print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
             window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
@@ -170,7 +174,7 @@ def main():
                 cap = cv2.VideoCapture(str(ip))
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                 window["slider"].update(range=(0, total_frames))
-                # assets = assets_list
+
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
                 assets = []
@@ -198,6 +202,7 @@ def main():
         if stream:
 
             if event == 'Add Data':
+                cv2.namedWindow("select the area",cv2.WINDOW_NORMAL)
                 asset_window.UnHide()
                 column = asset_window.read()[0]
                 asset_window.hide()
@@ -222,8 +227,12 @@ def main():
                 delete_val = values['Delete_drop']
 
             if event == 'NEXT' or event == 'Right:114' or event == "Right:39":
-                output_frame = int(output_frame) + 2
-                cap.read()
+                if Shift:
+                    output_frame = int(output_frame) + 14
+                    cap.set(1,output_frame)
+                else:
+                    output_frame = int(output_frame) + 2
+                    cap.read()
                 ret, frame = cap.read()
 
                 if str(output_frame) not in data:
@@ -232,10 +241,25 @@ def main():
 
             if event == 'PREVIOUS' or event == 'Left:113' or event == "Left:37":
 
-                output_frame = max(0, int(output_frame) - 2)
+                output_frame = max(0, int(output_frame) - 14) if  Shift else max(0, int(output_frame) - 2)
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
+
+            if "Shift" in event:
+                Shift=not Shift
+
+            # if "a:" in event:
+            #     add_sub=2
+            #     add_sub=-2
+            #     while True:
+            #         output_frame=min(max(output_frame+add_sub,0),total_frames)
+            #         if str(output_frame) in data:
+            #             for ass in data[str(output_frame)].keys():
+            #                 if len(data[str(output_frame)][ass]):
+            #                     break
+            #         if output_frame==0:
+            #             break
 
             if event == "Upload":
                 CONFIRM, wait = upload_confirmation()
