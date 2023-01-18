@@ -8,8 +8,8 @@ import ast
 import json
 import time
 from opencv_draw_annotation import draw_bounding_box
-from upload import converting_to_asset_format, generate, upload_confirmation
-
+from upload import converting_to_asset_format, generate, confirmation
+from final_submit import final_verify
 """
 LAYOUT DESIGN
 """
@@ -21,31 +21,30 @@ CSV = None
 PLAY = True
 column = ''
 
-
 col11 = sg.Image(filename='bg2.png', key='image')  # Coloumn 1 = Image view
 Output = sg.Text()
 Input = sg.Text()
 Error = sg.Text()
 col12 = [[sg.Text('ENTER VIDEO PATH')],
          # [sg.Slider(range=(0, 1000), default_value=0, size=(50, 10), orientation="h",enable_events=True, key="slider")],
-         [sg.Text('Input video Path', size=(18, 1)), sg.InputText('', key='-IN-'), sg.FileBrowse()],
-         [sg.Text('Normalized CSV File ', size=(18, 1)), sg.InputText('', key='CSV'), sg.FileBrowse()],
+         [sg.Text('Input video Path', size=(18, 1)), sg.InputText('', key='-IN-', size=(38, 1)), sg.FileBrowse()],
+         [sg.Text('Normalized CSV File ', size=(18, 1)), sg.InputText('', key='CSV', size=(38, 1)), sg.FileBrowse()],
          [sg.Button('Submit Videos')],
          [sg.Text('VIDEO PLAY')],
          [sg.Button('PLAY', size=(18, 1))],
          [sg.Text('ENTER FRAME NUMBER TO JUMP IN')],
-         [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key='skip')],
+         [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key='skip', size=(38, 1))],
          [sg.Button('Go', size=(18, 1))],
          [sg.Text('MODIFY MASTER')],
          # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
          [sg.Button('Add Data', size=(15, 1))],
          [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40, 4), key='Delete_drop'),
-          sg.Button('Select2')],
+          sg.Button('Select')],
          [sg.Text('NAVIGATE')],
          [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
 
          [sg.Button('PREVIOUS', size=(15, 1)), sg.Button('NEXT', size=(15, 1))],
-         [sg.Text('Click to upload : ', size=(18, 1)), sg.Button('Upload')],
+         [sg.Text('Click to generate final json and images : ', size=(35, 1)), sg.Button('Generate')],
          [sg.Button('SAVE FRAME', size=(15, 1)), sg.Button('EXIT', size=(15, 1)), sg.Text('', key='text'), Output,
           sg.Text('Frame no: '), Input]]
 
@@ -69,6 +68,7 @@ def save_json(data, CSV):
         json.dump(data, outfile)
 
 
+#
 tab1 = [[col11, sg.Frame(layout=col12, title='Details TO Enter')],
         [sg.Slider(range=(0, 1000), default_value=0, size=(200, 5), tick_interval=500, orientation="h",
                    enable_events=True, key="slider")]]
@@ -113,7 +113,7 @@ def addtoJSON(frameNo, asset, bbox, data):
         data[str(frameNo)][asset] = [[c, bbox[0], bbox[1]]]
 
 
-def main():
+def verify():
     # Select Color Theme
     try:
         os.mkdir("SavedImages")
@@ -128,10 +128,9 @@ def main():
     window.finalize()
     stream = False
     output_frame = 0
-    Shift=False
+    Shift = False
 
     ip = ''
-
 
     while True:
         letter = None
@@ -202,7 +201,7 @@ def main():
         if stream:
 
             if event == 'Add Data':
-                cv2.namedWindow("select the area",cv2.WINDOW_NORMAL)
+                cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
                 asset_window.UnHide()
                 column = asset_window.read()[0]
                 asset_window.hide()
@@ -223,13 +222,13 @@ def main():
                 frame = addBBox(frame, output_frame, data)
                 cv2.imwrite("SavedImages/" + os.path.basename(ip) + '_' + str(output_frame) + '.jpeg', frame)
 
-            if event == 'Select2':
+            if event == 'Select':
                 delete_val = values['Delete_drop']
 
             if event == 'NEXT' or event == 'Right:114' or event == "Right:39":
                 if Shift:
                     output_frame = int(output_frame) + 14
-                    cap.set(1,output_frame)
+                    cap.set(1, output_frame)
                 else:
                     output_frame = int(output_frame) + 2
                     cap.read()
@@ -241,32 +240,23 @@ def main():
 
             if event == 'PREVIOUS' or event == 'Left:113' or event == "Left:37":
 
-                output_frame = max(0, int(output_frame) - 14) if  Shift else max(0, int(output_frame) - 2)
+                output_frame = max(0, int(output_frame) - 14) if Shift else max(0, int(output_frame) - 2)
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
             if "Shift" in event:
-                Shift=not Shift
+                Shift = not Shift
 
-            # if "a:" in event:
-            #     add_sub=2
-            #     add_sub=-2
-            #     while True:
-            #         output_frame=min(max(output_frame+add_sub,0),total_frames)
-            #         if str(output_frame) in data:
-            #             for ass in data[str(output_frame)].keys():
-            #                 if len(data[str(output_frame)][ass]):
-            #                     break
-            #         if output_frame==0:
-            #             break
-
-            if event == "Upload":
-                CONFIRM, wait = upload_confirmation()
+            if event == "Generate":
+                CONFIRM, wait = confirmation("Generate")
                 if CONFIRM:
                     asset_format = converting_to_asset_format(data, total_frames)
                     generate(cap, asset_format, ip)
                 wait.close()
+                window.close()
+                return ip
+
 
             if event == 'Delete Data' and len(delete_val):
                 found = 25
@@ -312,7 +302,7 @@ def main():
                 ret = True
                 PAUSE = False
                 asset_seen = set()
-                cv2.namedWindow("OUT",cv2.WINDOW_NORMAL)
+                cv2.namedWindow("OUT", cv2.WINDOW_NORMAL)
                 while True:
                     new_asset = False
                     if not PAUSE:
@@ -361,8 +351,12 @@ def main():
             frame = addBBox(frame, output_frame, data)
 
             frame = cv2.resize(frame, (1280, 720))
-            imgbytes = cv2.imencode('.png', frame)[1].tobytes()  # ditto
+            imgbytes = cv2.imencode('.png', frame)[1].tobytes()
             window['image'].update(data=imgbytes)
 
+if __name__ == "__main__":
+    ip=verify()
+    if ip is not None:
+        final_json=os.path.basename(ip).replace(".MP4","")+"_final.json"
+        final_verify(ip,final_json)
 
-main()
