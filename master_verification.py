@@ -357,6 +357,8 @@ def verify():
 if __name__ == "__main__":
     ip=verify()
     if ip is not None:
-        final_json=os.path.basename(ip).replace(".MP4","")+"_final.json"
+        v_name=os.path.basename(ip).replace(".MP4","")
+        final_json=f"Upload_Images/{v_name}/{v_name}_final.json"
+
         final_verify(ip,final_json)
 
