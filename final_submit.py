@@ -64,7 +64,7 @@ def final_verify(ip=None,json=None,stream = False):
          [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
          [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
          [sg.Button('Submit Video',size=(15, 1))],
-         [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
+         [sg.Button('START', size=(15, 1))],
          [sg.Text('MODIFY MASTER')],
 
          [sg.Button('Replace Image', size=(15, 1))],
@@ -79,7 +79,7 @@ def final_verify(ip=None,json=None,stream = False):
          [sg.Button('Upload', size=(15, 1))],
          [sg.Text(' '), Error]]
     if ip is not None:
-        col12=col12[0:1]+col12[4:]
+        col12=col12[4:]
     layout = [[col11, sg.Frame(layout=col12, title='Details TO Enter')]]
 
     window = sg.Window('Data Verification Toolbox',
@@ -89,7 +89,7 @@ def final_verify(ip=None,json=None,stream = False):
     output_frame = 0
     while True:
         event, values = window.read()
-        print(event,values)
+        # print(event,values)
         if event == 'EXIT' or event == sg.WIN_CLOSED:
             break
 
@@ -145,7 +145,7 @@ def final_verify(ip=None,json=None,stream = False):
             draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[current[0]])
 
         if event == "Replace Image":
-            cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}_.jpeg",image)
+            cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg",image)
         if event == "Upload":
             CONFIRM, wait = confirmation("Upload")
             if CONFIRM:
