@@ -52,13 +52,16 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
 # Join two columns
 def asset_select_window(keys, cols):
     layout = []
+    # print(keys)
     d = len(keys)
     r = d % cols
     keys = keys + [""] * (cols - r)
     n = len(keys) // cols
     for hh in range(n):
         layout.append([sg.Button(keys[x + hh * cols], size=(24, 1), pad=(0, 0)) for x in range(cols)])
-    win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True)
+
+    layout.append([sg.InputText('', key='New_Asset', size=(58, 1)), sg.Button('ADD_NEW_ASSET',size=(18, 1))]) # ,
+    win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True,element_justification='c')
     win.hide()
     return win
 
@@ -182,7 +185,6 @@ def verify():
                         x = int(x)
                     except:
                         assets.append(x)
-                # window.FindElement('Coloumn').Update(values = assets)
                 assets.sort(key=lambda strings: len(strings), reverse=True)
                 asset_window = asset_select_window(assets, 6)
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
@@ -201,13 +203,25 @@ def verify():
         if stream:
 
             if event == 'Add Data':
-                cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
                 asset_window.UnHide()
-                column = asset_window.read()[0]
+                while True:
+                    column,val = asset_window.read()
+                    # print(column,val)
+                    if column == "ADD_NEW_ASSET":
+                        data[val["New_Asset"]]=0
+                        asset_window.close()
+                        assets.append(val["New_Asset"])
+                        assets.sort(key=lambda strings: len(strings), reverse=True)
+                        asset_window = asset_select_window(assets, 6)
+                        asset_window.UnHide()
+
+                    else:
+                        break
                 asset_window.hide()
                 if column == "-WINDOW CLOSE ATTEMPTED-" or len(column) == 0:
                     continue
                 cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
+                cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
                 ret, frame = cap.read()
                 r = cv2.selectROI("select the area", frame)
                 cv2.destroyWindow("select the area")
@@ -253,11 +267,12 @@ def verify():
                 if CONFIRM:
                     asset_format = converting_to_asset_format(data, total_frames)
                     generate(cap, asset_format, ip)
+                    window.close()
+                    wait.close()
+                    return ip
                 wait.close()
-                window.close()
-                return ip
-
-
+                
+                
             if event == 'Delete Data' and len(delete_val):
                 found = 25
                 for x in range(output_frame, total_frames - 1):
@@ -359,6 +374,5 @@ if __name__ == "__main__":
     if ip is not None:
         v_name=os.path.basename(ip).replace(".MP4","")
         final_json=f"Upload_Images/{v_name}/{v_name}_final.json"
-
         final_verify(ip,final_json)
 
