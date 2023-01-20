@@ -236,7 +236,7 @@ def verify():
                 frame = addBBox(frame, output_frame, data)
                 cv2.imwrite("SavedImages/" + os.path.basename(ip) + '_' + str(output_frame) + '.jpeg', frame)
 
-            if event == 'Select' or  "Return" in event:
+            if event == 'Select' or  "Return" in event or event == "\r":
                 delete_val = values['Delete_drop']
 
             if event == 'NEXT' or event == 'Right:114' or event == "Right:39":
@@ -273,7 +273,7 @@ def verify():
                 wait.close()
                 
                 
-            if (event == "Delete Data" or event == "Delete:119" ) and len(delete_val):
+            if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
                 found = 25
                 for x in range(output_frame, total_frames - 1):
                     if x % 2 == 1:
