@@ -273,7 +273,8 @@ def verify():
                 wait.close()
                 
                 
-            if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
+            # if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
+            if ("delete:" in event.lower() or event == "\x7f" ) and len(delete_val):
                 found = 25
                 for x in range(output_frame, total_frames - 1):
                     if x % 2 == 1:
