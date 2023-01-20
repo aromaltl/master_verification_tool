@@ -316,7 +316,7 @@ def verify():
 
             if event == 'PLAY':
                 ret = True
-                PAUSE = False
+                PAUSE = True
                 asset_seen = set()
                 cv2.namedWindow("OUT", cv2.WINDOW_NORMAL)
                 while True:
