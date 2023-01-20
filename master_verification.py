@@ -139,7 +139,7 @@ def verify():
         letter = None
         event, values = window.read()
 
-        # print(event,values)
+        print((event,values))
         # print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
@@ -246,7 +246,7 @@ def verify():
                 else:
                     output_frame = int(output_frame) + 2
                     cap.read()
-                ret, frame = cap.read()
+                
 
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
@@ -356,11 +356,14 @@ def verify():
 
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
                 cv2.destroyWindow("OUT")
-            output_frame = (min(output_frame, total_frames - 1) // 2) * 2
-            # faster next frame
+            output_frame = int(output_frame // 2) * 2
+            if output_frame>total_frames - 1:
+                cap.set(cv2.CAP_PROP_POS_FRAMES,total_frames - 1)
+                output_frame=total_frames-1
+
             if event != 'NEXT' and event != 'Right:114' and event != 'Right:39':
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
-                ret, frame = cap.read()
+            ret, frame = cap.read()
 
             window["slider"].update(value=output_frame)
             Input.update(value=output_frame)
