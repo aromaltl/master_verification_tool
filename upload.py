@@ -49,7 +49,7 @@ def generate(cap, data, video_name):
             final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2]])
             cap.set(1, int(val[0]))
             ret, frame = cap.read()
-            draw_bounding_box(frame, (val[1][0], val[1][1], val[2][0], val[2][1]), labels=[Asset], color='green')
+            draw_bounding_box(frame, (val[1][0], val[1][1], val[2][0], val[2][1]), labels=[asset], color='green')
             cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(val[0])}_{Asset}_{str(ids)}.jpeg", frame)
     print("images Done!!!")
     final_json["Assets"].sort(key=lambda yy: int(yy[2]))
@@ -63,6 +63,7 @@ def confirmation(CONFIRMATION):
     Input = sg.Text(font=("Arial", 20), justification='center')
     layout = [[sg.Button("Confirm", size=(12, 2), pad=(50, 40), font=("Arial", 20)),
                sg.Button("Cancel", size=(12, 2), pad=(50, 40), font=("Arial", 20))], [Input]]
+    # layout=sg.Column(layout, scrollable=True,  vertical_scroll_only=True)
     win = sg.Window(CONFIRMATION, layout, finalize=True, enable_close_attempted_event=True,
                     element_justification='c')
     event = win.read()[0]
