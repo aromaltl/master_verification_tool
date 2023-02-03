@@ -60,7 +60,7 @@ def final_verify(ip=None, json=None, stream=False):
     Error = sg.Text()
     Asset = sg.Text()
     comment = sg.Text()
-    remark= sg.Text()
+    remark = sg.Text()
     col12 = [[sg.Text('ENTER VIDEO PATH')],
 
              [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
@@ -146,16 +146,19 @@ def final_verify(ip=None, json=None, stream=False):
             data["Assets"][index] = [current[0], current[1], output_frame, [r[0], r[1]], [r[2] + r[0], r[3] + r[1]]]
             os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
             current = data["Assets"][index]
+            save_json(data, json)
 
             save_json(data, json)
         if event == "Add Info":
             data["Assets"][index][5][0] = values["comment"]
             data["Assets"][index][5][1] = values["remark"]
             current = data["Assets"][index]
+            save_json(data, json)
 
         if current[2] == output_frame:
-            label=current[0].replace("RIGHT_","").replace("LEFT_","")
-            draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[label],color='green')
+            label = current[0].replace("RIGHT_", "").replace("LEFT_", "")
+            draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[label],
+                              color='green')
 
         if event == "Replace Image":
             cv2.imwrite(
@@ -168,8 +171,9 @@ def final_verify(ip=None, json=None, stream=False):
             break
 
         Asset.update(value=current[0])
-        comment.update(value=current[5][0],text_color='Yellow')
-        remark.update(value=current[5][1],text_color='Yellow')
+
+        comment.update(value=current[5][0], text_color='Yellow')
+        remark.update(value=current[5][1], text_color='Yellow')
 
         Input.update(value=output_frame)
         image = cv2.resize(image, (1280, 720))
@@ -178,4 +182,4 @@ def final_verify(ip=None, json=None, stream=False):
 
 
 if __name__ == "__main__":
-    final_verify("sds", "dfsf")
+    final_verify()
