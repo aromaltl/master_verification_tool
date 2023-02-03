@@ -122,6 +122,8 @@ def verify():
         os.mkdir("SavedImages")
     except:
         pass
+    df=pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
+    df
     sg.theme('DarkGrey5')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip')]])]]
     # Frame windows
@@ -332,7 +334,6 @@ def verify():
 
                         frame = addBBox(frame, output_frame, data)
 
-                        # draw_assets=[]
                         for ass in data[str(output_frame)]:
                             for items in data[str(output_frame)][ass]:
                                 if str(items[0]) + ass not in asset_seen:

@@ -10,7 +10,6 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 
-
 col11 = sg.Image(key='image')
 Output = sg.Text()
 Input = sg.Text()
@@ -20,7 +19,7 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
 
          [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
          [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
-         [sg.Button('Submit Video',size=(15, 1))],
+         [sg.Button('Submit Video', size=(15, 1))],
          [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
          [sg.Text('MODIFY MASTER')],
 
@@ -53,33 +52,41 @@ def load_json(CSV):
 
     return data
 
-def final_verify(ip=None,json=None,stream = False):
+
+def final_verify(ip=None, json=None, stream=False):
     col11 = sg.Image(key='image')
     Output = sg.Text()
     Input = sg.Text()
     Error = sg.Text()
     Asset = sg.Text()
+    comment = sg.Text()
+    remark= sg.Text()
     col12 = [[sg.Text('ENTER VIDEO PATH')],
 
-         [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
-         [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
-         [sg.Button('Submit Video',size=(15, 1))],
-         [sg.Button('START', size=(15, 1))],
-         [sg.Text('MODIFY MASTER')],
+             [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
+             [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
+             [sg.Button('Submit Video', size=(15, 1))],
+             [sg.Button('START', size=(15, 1))],
+             [sg.Text('MODIFY MASTER')],
+             [sg.Text('Comment ', size=(18, 1)), sg.InputText('', key='comment', size=(38, 1))],
+             [sg.Text('Remark ', size=(18, 1)), sg.InputText('', key='remark', size=(38, 1))],
+             [sg.Button('Add Info', size=(15, 1))],
+             [sg.Button('Replace Image', size=(15, 1))],
 
-         [sg.Button('Replace Image', size=(15, 1))],
-         [sg.Text('Current Asset: '), Asset],
-         [sg.Text('Change Frames')],
+             [sg.Text('Current Asset: '), Asset],
+             [sg.Text('Remark: '), remark],
+             [sg.Text('Comment: '), comment],
+             [sg.Text('Change Frames')],
 
-         [sg.Button('Previous Frame', size=(15, 1)), sg.Button('Next Frame', size=(15, 1))],
-         [sg.Text('Change Assets')],
-         [sg.Button('Previous Asset', size=(15, 1)), sg.Button('Next Asset', size=(15, 1))],
-         [sg.Button('EXIT', size=(15, 1)), sg.Text('Frame no: '), Input],
-         [sg.Text('FINAL SUBMISSION')],
-         [sg.Button('Upload', size=(15, 1))],
-         [sg.Text(' '), Error]]
+             [sg.Button('Previous Frame', size=(15, 1)), sg.Button('Next Frame', size=(15, 1))],
+             [sg.Text('Change Assets')],
+             [sg.Button('Previous Asset', size=(15, 1)), sg.Button('Next Asset', size=(15, 1))],
+             [sg.Button('EXIT', size=(15, 1)), sg.Text('Frame no: '), Input],
+             [sg.Text('FINAL SUBMISSION')],
+             [sg.Button('Upload', size=(15, 1))],
+             [sg.Text(' '), Error]]
     if ip is not None:
-        col12=col12[4:]
+        col12 = col12[4:]
     layout = [[col11, sg.Frame(layout=col12, title='Details TO Enter')]]
 
     window = sg.Window('Data Verification Toolbox',
@@ -95,7 +102,7 @@ def final_verify(ip=None,json=None,stream = False):
 
         try:
             if event == 'Submit Video':
-                if ip is  None:
+                if ip is None:
                     ip = values['-IN-']
 
                 if json is None:
@@ -106,6 +113,7 @@ def final_verify(ip=None,json=None,stream = False):
                 data["Assets"].sort(key=lambda val: val[2])
                 total_assets = len(data["Assets"])
                 current = data["Assets"][0]
+                output_frame = current[2]
                 cap = cv2.VideoCapture(ip)
                 os.makedirs(f"Upload_Images/{video_name}", exist_ok=True)
                 stream = True
@@ -140,12 +148,18 @@ def final_verify(ip=None,json=None,stream = False):
             current = data["Assets"][index]
 
             save_json(data, json)
+        if event == "Add Info":
+            data["Assets"][index][5][0] = values["comment"]
+            data["Assets"][index][5][1] = values["remark"]
+            current = data["Assets"][index]
 
         if current[2] == output_frame:
-            draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[current[0]])
+            label=current[0].replace("RIGHT_","").replace("LEFT_","")
+            draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[label],color='green')
 
         if event == "Replace Image":
-            cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg",image)
+            cv2.imwrite(
+                f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg", image)
         if event == "Upload":
             CONFIRM, wait = confirmation("Upload")
             if CONFIRM:
@@ -153,14 +167,15 @@ def final_verify(ip=None,json=None,stream = False):
             wait.close()
             break
 
-
         Asset.update(value=current[0])
+        comment.update(value=current[5][0],text_color='Yellow')
+        remark.update(value=current[5][1],text_color='Yellow')
+
         Input.update(value=output_frame)
         image = cv2.resize(image, (1280, 720))
         imgbytes = cv2.imencode('.png', image)[1].tobytes()  # ditto
         window['image'].update(data=imgbytes)
 
 
-
 if __name__ == "__main__":
-    final_verify("sds","dfsf")
+    final_verify("sds", "dfsf")
