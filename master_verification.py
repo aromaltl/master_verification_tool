@@ -106,9 +106,8 @@ def drop_down_list(frame, data):
     return i
 
 
-def addtoJSON(frameNo, asset, bbox, data):
-    data[asset] += 1
-    c = str(data[asset])
+def addtoJSON(frameNo, asset, bbox, data,id_):
+    c = str(id_)
     try:
         data[str(frameNo)][asset].append([c, bbox[0], bbox[1]])
 
@@ -141,7 +140,7 @@ def verify():
         letter = None
         event, values = window.read()
 
-        print((event,values))
+        # print((event,values))
         # print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
@@ -227,7 +226,12 @@ def verify():
                 ret, frame = cap.read()
                 r = cv2.selectROI("select the area", frame)
                 cv2.destroyWindow("select the area")
-                addtoJSON(output_frame, column, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data)
+                if type(values['Delete_drop']) is str and len(values['Delete_drop']):
+
+                    addtoJSON(output_frame, column, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,values['Delete_drop'])
+                else:
+                    data[column]+=1
+                    addtoJSON(output_frame, column, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,data[column])
                 frame = addBBox(frame, output_frame, data)
                 save_json(data, CSV)
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
@@ -276,7 +280,7 @@ def verify():
                 
                 
             # if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
-            if ("delete:" in event.lower() or event == "\x7f" ) and len(delete_val):
+            if ("delete" in event.lower() or event == "\x7f" ) and len(delete_val):
                 found = 25
                 for x in range(output_frame, total_frames - 1):
                     if x % 2 == 1:
