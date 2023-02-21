@@ -144,7 +144,7 @@ def verify():
         letter = None
         event, values = window.read()
 
-        print((event, values))
+        # print((event, values))
         # print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
@@ -212,7 +212,7 @@ def verify():
                     asset_window.UnHide()
                     while True:
                         column, val = asset_window.read()
-                        print("###", column, val)
+
                         if column == "ADD_NEW_ASSET":
                             data[val["New_Asset"]] = 0
                             asset_window.close()
@@ -232,7 +232,11 @@ def verify():
                     continue
                 cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
                 cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
+
                 ret, frame = cap.read()
+                # cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WND_PROP_TOPMOST)
+                cv2.setWindowProperty("select the area",  cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                # cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_AUTOSIZE)
                 r = cv2.selectROI("select the area", frame)
                 cv2.destroyWindow("select the area")
                 if sum(r) == 0:
@@ -246,6 +250,7 @@ def verify():
                               data[PREV_SELECTED_ASSET])
                 frame = addBBox(frame, output_frame, data)
                 save_json(data, CSV)
+                window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
             if event == 'SAVE FRAME' or letter == 83:
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
@@ -256,7 +261,7 @@ def verify():
             if event == 'Select' or "Return" in event or event == "\r":
                 delete_val = values['Delete_drop']
 
-            if event == 'NEXT' or   event == 'Right:114' or event == "Right:39":
+            if event == 'NEXT' or event == 'Right:114' or event == "Right:39":
                 if Shift:
                     output_frame = int(output_frame) + 14
                     cap.set(1, output_frame)
