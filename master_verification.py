@@ -207,7 +207,7 @@ def verify():
 
         if stream:
 
-            if event == 'Add Data' or 'q:' in event:
+            if event == 'Add Data' or 'Alt_L' in event:
                 if event == 'Add Data':
                     asset_window.UnHide()
                     while True:
