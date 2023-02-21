@@ -10,6 +10,7 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
+
 """
 LAYOUT DESIGN
 """
@@ -60,8 +61,9 @@ def asset_select_window(keys, cols):
     for hh in range(n):
         layout.append([sg.Button(keys[x + hh * cols], size=(24, 1), pad=(0, 0)) for x in range(cols)])
 
-    layout.append([sg.InputText('', key='New_Asset', size=(58, 1)), sg.Button('ADD_NEW_ASSET',size=(18, 1))]) # ,
-    win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True,element_justification='c')
+    layout.append([sg.InputText('', key='New_Asset', size=(58, 1)), sg.Button('ADD_NEW_ASSET', size=(18, 1))])  # ,
+    win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True,
+                    element_justification='c')
     win.hide()
     return win
 
@@ -106,7 +108,7 @@ def drop_down_list(frame, data):
     return i
 
 
-def addtoJSON(frameNo, asset, bbox, data,id_):
+def addtoJSON(frameNo, asset, bbox, data, id_):
     c = str(id_)
     try:
         data[str(frameNo)][asset].append([c, bbox[0], bbox[1]])
@@ -121,7 +123,7 @@ def verify():
         os.mkdir("SavedImages")
     except:
         pass
-    df=pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
+    df = pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
     # df
     sg.theme('DarkGrey5')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip')]])]]
@@ -135,12 +137,14 @@ def verify():
     Shift = False
 
     ip = ''
+    PREV_SELECTED_ASSET = ''
+    delete_val=''
 
     while True:
         letter = None
         event, values = window.read()
 
-        # print((event,values))
+        print((event, values))
         # print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
@@ -176,7 +180,7 @@ def verify():
                 print('START')
                 cap = cv2.VideoCapture(str(ip))
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                window["slider"].update(range=(0, total_frames))
+                window["slider"].update(range=(0, total_frames-1))
 
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
@@ -203,38 +207,45 @@ def verify():
 
         if stream:
 
-            if event == 'Add Data':
-                asset_window.UnHide()
-                while True:
-                    column,val = asset_window.read()
-                    # print(column,val)
-                    if column == "ADD_NEW_ASSET":
-                        data[val["New_Asset"]]=0
-                        asset_window.close()
-                        assets.append(val["New_Asset"])
-                        assets.sort(key=lambda strings: len(strings), reverse=True)
-                        asset_window = asset_select_window(assets, 6)
-                        asset_window.UnHide()
+            if event == 'Add Data' or 'q:' in event:
+                if event == 'Add Data':
+                    asset_window.UnHide()
+                    while True:
+                        column, val = asset_window.read()
+                        print("###", column, val)
+                        if column == "ADD_NEW_ASSET":
+                            data[val["New_Asset"]] = 0
+                            asset_window.close()
+                            assets.append(val["New_Asset"])
+                            assets.sort(key=lambda strings: len(strings), reverse=True)
+                            asset_window = asset_select_window(assets, 6)
+                            asset_window.UnHide()
 
-                    else:
-                        break
-                asset_window.hide()
-                if column == "-WINDOW CLOSE ATTEMPTED-" or len(column) == 0:
+                        else:
+                            if column != "-WINDOW CLOSE ATTEMPTED-":
+                                PREV_SELECTED_ASSET = column
+                            break
+                    asset_window.hide()
+                    if column == "-WINDOW CLOSE ATTEMPTED-":
+                        continue
+                if len(PREV_SELECTED_ASSET) == 0:
                     continue
                 cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
                 cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
                 ret, frame = cap.read()
                 r = cv2.selectROI("select the area", frame)
                 cv2.destroyWindow("select the area")
-                if type(values['Delete_drop']) is str and len(values['Delete_drop']):
-
-                    addtoJSON(output_frame, column, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,values['Delete_drop'])
+                if sum(r) == 0:
+                    continue
+                if type(delete_val) is str and len(delete_val):
+                    addtoJSON(output_frame, PREV_SELECTED_ASSET, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,
+                              delete_val)
                 else:
-                    data[column]+=1
-                    addtoJSON(output_frame, column, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,data[column])
+                    data[PREV_SELECTED_ASSET] += 1
+                    addtoJSON(output_frame, PREV_SELECTED_ASSET, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,
+                              data[PREV_SELECTED_ASSET])
                 frame = addBBox(frame, output_frame, data)
                 save_json(data, CSV)
-                window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
             if event == 'SAVE FRAME' or letter == 83:
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
@@ -242,29 +253,29 @@ def verify():
                 frame = addBBox(frame, output_frame, data)
                 cv2.imwrite("SavedImages/" + os.path.basename(ip) + '_' + str(output_frame) + '.jpeg', frame)
 
-            if event == 'Select' or  "Return" in event or event == "\r":
+            if event == 'Select' or "Return" in event or event == "\r":
                 delete_val = values['Delete_drop']
 
-            if event == 'NEXT' or event == 'Right:114' or event == "Right:39":
+            if event == 'NEXT' or 'd:' in event:  # event == 'Right:114' or event == "Right:39":
                 if Shift:
                     output_frame = int(output_frame) + 14
                     cap.set(1, output_frame)
                 else:
                     output_frame = int(output_frame) + 2
                     cap.read()
-                
 
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
+                delete_val=''
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
-            if event == 'PREVIOUS' or event == 'Left:113' or event == "Left:37":
+            if event == 'PREVIOUS' or 'a:' in event:
 
                 output_frame = max(0, int(output_frame) - 14) if Shift else max(0, int(output_frame) - 2)
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
+                delete_val = ''
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
-
             if "Shift" in event:
                 Shift = not Shift
 
@@ -277,10 +288,9 @@ def verify():
                     wait.close()
                     return ip
                 wait.close()
-                
-                
+
             # if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
-            if ("delete" in event.lower() or event == "\x7f" ) and len(delete_val):
+            if ("delete" in event.lower() or event == "\x7f") and len(delete_val):
                 found = 25
                 for x in range(output_frame, total_frames - 1):
                     if x % 2 == 1:
@@ -318,9 +328,8 @@ def verify():
                         break
                 save_json(data, CSV)
                 delete_val = ""
-                window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
-            if event == 'PLAY':
+            if event == 'PLAY' or 'space:' in event:
                 ret = True
                 PAUSE = True
                 asset_seen = set()
@@ -358,17 +367,19 @@ def verify():
 
                     if not ret or key_press & 0xff == 27:
                         break
-
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
                 cv2.destroyWindow("OUT")
-            output_frame = int(output_frame // 2) * 2
-            if output_frame>total_frames - 1:
-                cap.set(cv2.CAP_PROP_POS_FRAMES,total_frames - 1)
-                output_frame=total_frames-1
+            # output_frame = int(output_frame // 2) * 2
+            if output_frame > total_frames - 1:
+                cap.set(cv2.CAP_PROP_POS_FRAMES, total_frames - 1)
+                output_frame = total_frames - 1
+                output_frame = int(output_frame // 2) * 2
+                window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
-            if event != 'NEXT' and event != 'Right:114' and event != 'Right:39':
+            if event != 'NEXT' and 'd:' not in event:
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
             ret, frame = cap.read()
+
 
             window["slider"].update(value=output_frame)
             Input.update(value=output_frame)
@@ -378,10 +389,10 @@ def verify():
             imgbytes = cv2.imencode('.png', frame)[1].tobytes()
             window['image'].update(data=imgbytes)
 
-if __name__ == "__main__":
-    ip=verify()
-    if ip is not None:
-        v_name=os.path.basename(ip).replace(".MP4","")
-        final_json=f"Upload_Images/{v_name}/{v_name}_final.json"
-        final_verify(ip,final_json)
 
+if __name__ == "__main__":
+    ip = verify()
+    if ip is not None:
+        v_name = os.path.basename(ip).replace(".MP4", "")
+        final_json = f"Upload_Images/{v_name}/{v_name}_final.json"
+        final_verify(ip, final_json)
