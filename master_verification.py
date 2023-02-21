@@ -138,7 +138,7 @@ def verify():
 
     ip = ''
     PREV_SELECTED_ASSET = ''
-    delete_val=''
+    delete_val = ''
 
     while True:
         letter = None
@@ -180,7 +180,7 @@ def verify():
                 print('START')
                 cap = cv2.VideoCapture(str(ip))
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                window["slider"].update(range=(0, total_frames-1))
+                window["slider"].update(range=(0, total_frames - 1))
 
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
@@ -256,7 +256,7 @@ def verify():
             if event == 'Select' or "Return" in event or event == "\r":
                 delete_val = values['Delete_drop']
 
-            if event == 'NEXT' or 'd:' in event:  # event == 'Right:114' or event == "Right:39":
+            if event == 'NEXT' or   event == 'Right:114' or event == "Right:39":
                 if Shift:
                     output_frame = int(output_frame) + 14
                     cap.set(1, output_frame)
@@ -266,10 +266,10 @@ def verify():
 
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
-                delete_val=''
+                delete_val = ''
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
-            if event == 'PREVIOUS' or 'a:' in event:
+            if event == 'PREVIOUS' or 'Left:' in event:
 
                 output_frame = max(0, int(output_frame) - 14) if Shift else max(0, int(output_frame) - 2)
                 if str(output_frame) not in data:
@@ -329,7 +329,7 @@ def verify():
                 save_json(data, CSV)
                 delete_val = ""
 
-            if event == 'PLAY' or 'space:' in event:
+            if event == 'PLAY' or 'space:' in event or event == " ":
                 ret = True
                 PAUSE = True
                 asset_seen = set()
@@ -345,6 +345,7 @@ def verify():
                         if str(output_frame) not in data:
                             data[str(output_frame)] = {}
 
+                        frame = addBBox(frame, output_frame, data)
                         frame = addBBox(frame, output_frame, data)
 
                         for ass in data[str(output_frame)]:
@@ -376,10 +377,9 @@ def verify():
                 output_frame = int(output_frame // 2) * 2
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
-            if event != 'NEXT' and 'd:' not in event:
+            if event != 'NEXT' and 'Right:' not in event:
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
             ret, frame = cap.read()
-
 
             window["slider"].update(value=output_frame)
             Input.update(value=output_frame)
@@ -388,6 +388,8 @@ def verify():
             frame = cv2.resize(frame, (1280, 720))
             imgbytes = cv2.imencode('.png', frame)[1].tobytes()
             window['image'].update(data=imgbytes)
+            # import keyboard
+            # print("@@@@@@@",keyboard.is_pressed("shift"))
 
 
 if __name__ == "__main__":
