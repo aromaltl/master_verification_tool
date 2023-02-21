@@ -3,18 +3,20 @@ import numpy as np
 from opencv_draw_annotation import draw_bounding_box
 import json
 import glob
+import os
 
 assets_dic={}
-videos=list(glob.glob("/run/user/1000/gvfs/afp-volume:host=Anton.local,user=ml_support,volume=MachineLearning/POC/KSA Aramco/lhs/*.MP4"))
+videos=list(glob.glob("/home/tl028/Downloads/1/*.MP4"))
 videos.sort()
 counter={}
 cap=cv2.VideoCapture(videos[0])
-
+dirname = os.path.basename(videos[0])
 
 w, h =  int(cap.get(3)), int(cap.get(4))
 cap.release()
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-writer = cv2.VideoWriter("out_lhs.MP4", fourcc, 30, (w, h))
+writer = cv2.VideoWriter("out.MP4", fourcc, 30, (w, h))
+
 def addBBox(im, frameNo,data):
     if str(frameNo) not in data:
         data[str(frameNo)]={}
@@ -26,8 +28,8 @@ def addBBox(im, frameNo,data):
             if items[0] not in assets_dic[ass]:
                 assets_dic[ass][items[0]]=counter[ass]
                 counter[ass]+=1
-
-            draw_bounding_box(im, (items[1][0],items[1][1],items[2][0],items[2][1]), labels=[str(assets_dic[ass][items[0]]), ass], color='green') 
+            print()
+            draw_bounding_box(im, (items[1][0],items[1][1],items[2][0],items[2][1]), labels=[str(counter[ass]), ass], color='green') 
     return im
 
 for x in videos:
@@ -47,7 +49,7 @@ for x in videos:
 
         frame=addBBox(frame, frame_no, data)
         frame_no+=2
-        cv2.imshow("out",frame[::2,::2])
+        cv2.imshow("out_",frame[::2,::2])
         writer.write(frame)
 writer.release()
 

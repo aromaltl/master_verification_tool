@@ -122,7 +122,7 @@ def verify():
     except:
         pass
     df=pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
-    df
+    # df
     sg.theme('DarkGrey5')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip')]])]]
     # Frame windows
