@@ -45,7 +45,7 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
          [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
 
          [sg.Button('PREVIOUS', size=(15, 1)), sg.Button('NEXT', size=(15, 1))],
-         [sg.Text('Click to generate final json and images : ', size=(35, 1)), sg.Button('Generate')],
+         [sg.Button('Generate'),sg.Text('<-Generate final json and images', size=(35, 1))],
          [sg.Button('SAVE FRAME', size=(15, 1)), sg.Button('EXIT', size=(15, 1)), sg.Text('', key='text'), Output,
           sg.Text('Frame no: '), Input]]
 
