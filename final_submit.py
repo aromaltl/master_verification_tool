@@ -150,7 +150,7 @@ def final_verify(ip=None, json=None, stream=False):
             data["Assets"][index][3]=[r[0], r[1]]
             data["Assets"][index][4]=[r[2] + r[0], r[3] + r[1]]
             if os.path.exists(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"):
-                os.remove(os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"))
+                os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
             # print(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
 
 
