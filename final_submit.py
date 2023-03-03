@@ -144,11 +144,15 @@ def final_verify(ip=None, json=None, stream=False):
             cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
             r = cv2.selectROI("select the area", image)
             cv2.destroyWindow("select the area")
+
             # data["Assets"][index] = [current[0], current[1], output_frame, [r[0], r[1]], [r[2] + r[0], r[3] + r[1]]]
             data["Assets"][index][2]=output_frame
             data["Assets"][index][3]=[r[0], r[1]]
             data["Assets"][index][4]=[r[2] + r[0], r[3] + r[1]]
-            os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
+            if os.path.exists(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"):
+                os.remove(os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"))
+            # print(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
+
 
 
             current = data["Assets"][index]
@@ -158,15 +162,17 @@ def final_verify(ip=None, json=None, stream=False):
         if event == "Add Info":
             data["Assets"][index][5][0] = values["comment"]
             data["Assets"][index][5][1] = values["remark"]
-            current = data["Assets"][index]
+            current = data["Assets"][index][:]
             save_json(data, json)
 
         if current[2] == output_frame:
             label = current[0].replace("RIGHT_", "").replace("LEFT_", "")
+
             draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[label],
                               color='green')
 
         if event == "Replace Image":
+
             cv2.imwrite(
                 f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg", image)
             
