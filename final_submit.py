@@ -139,6 +139,7 @@ def final_verify(ip=None, json=None, stream=False):
         cap.set(1, output_frame)
 
         ret, image = cap.read()
+
         if event == "Replace Image":
             cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
             r = cv2.selectROI("select the area", image)
@@ -147,12 +148,13 @@ def final_verify(ip=None, json=None, stream=False):
             data["Assets"][index][2]=output_frame
             data["Assets"][index][3]=[r[0], r[1]]
             data["Assets"][index][4]=[r[2] + r[0], r[3] + r[1]]
+            os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
 
 
             current = data["Assets"][index]
             save_json(data, json)
 
-            save_json(data, json)
+            # save_json(data, json)
         if event == "Add Info":
             data["Assets"][index][5][0] = values["comment"]
             data["Assets"][index][5][1] = values["remark"]
@@ -167,7 +169,7 @@ def final_verify(ip=None, json=None, stream=False):
         if event == "Replace Image":
             cv2.imwrite(
                 f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg", image)
-            os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
+            
         if event == "Upload":
             CONFIRM, wait = confirmation("Upload")
             if CONFIRM:
