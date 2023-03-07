@@ -207,8 +207,8 @@ def verify():
 
         if stream:
 
-            if event == 'Add Data' or 'Alt_L' in event:
-                if event == 'Add Data':
+            if event == 'Add Data' or 'alt_' in event.lower():
+                if event == 'Add Data' or 'alt_r' in event.lower():
                     asset_window.UnHide()
                     while True:
                         column, val = asset_window.read()
@@ -334,7 +334,7 @@ def verify():
                 save_json(data, CSV)
                 delete_val = ""
 
-            if event == 'PLAY' or 'space:' in event or event == " ":
+            if event == 'PLAY' or 'space:' in event.lower() or event == " ":
                 ret = True
                 PAUSE = True
                 asset_seen = set()
