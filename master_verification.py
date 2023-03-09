@@ -207,8 +207,8 @@ def verify():
 
         if stream:
 
-            if event == 'Add Data' or 'alt_' in event.lower():
-                if event == 'Add Data' or 'alt_r' in event.lower():
+            if event == 'Add Data' or 'alt_l' in event.lower() or 'control_l' in event.lower():
+                if event == 'Add Data' or 'alt_l' in event.lower():
                     asset_window.UnHide()
                     while True:
                         column, val = asset_window.read()
@@ -351,7 +351,7 @@ def verify():
                             data[str(output_frame)] = {}
 
                         frame = addBBox(frame, output_frame, data)
-                        frame = addBBox(frame, output_frame, data)
+                        # frame = addBBox(frame, output_frame, data)
 
                         for ass in data[str(output_frame)]:
                             for items in data[str(output_frame)][ass]:
