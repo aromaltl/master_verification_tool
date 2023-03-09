@@ -15,27 +15,30 @@ Output = sg.Text()
 Input = sg.Text()
 Error = sg.Text()
 Asset = sg.Text()
-col12 = [[sg.Text('ENTER VIDEO PATH')],
+REMARK=['Bent','Broken','Missing','Plant Overgrown','Paint Worn Off','Dirt','Not Working','Others']
+COMMENT=['Longitudinal Crack','Raveling Crack','Alligator Crack','Transverse Crack','Patching','Pothole']
 
-         [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
-         [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
-         [sg.Button('Submit Video', size=(15, 1))],
-         [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
-         [sg.Text('MODIFY MASTER')],
+# col12 = [[sg.Text('ENTER VIDEO PATH')],
 
-         [sg.Button('Replace Image', size=(15, 1))],
-         [sg.Text('Current Asset: '), Asset],
-         [sg.Text('Change Frames')],
+#          [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
+#          [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
+#          [sg.Button('Submit Video', size=(15, 1))],
+#          [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
+#          [sg.Text('MODIFY MASTER')],
 
-         [sg.Button('Previous Frame', size=(15, 1)), sg.Button('Next Frame', size=(15, 1))],
-         [sg.Text('Change Assets')],
-         [sg.Button('Previous Asset', size=(15, 1)), sg.Button('Next Asset', size=(15, 1))],
-         [sg.Button('EXIT', size=(15, 1)), sg.Text('Frame no: '), Input],
-         [sg.Text('FINAL SUBMISSION')],
-         [sg.Button('Upload', size=(15, 1))],
-         [sg.Text(' '), Error]]
+#          [sg.Button('Replace Image', size=(15, 1))],
+#          [sg.Text('Current Asset: '), Asset],
+#          [sg.Text('Change Frames')],
 
-layout = [[col11, sg.Frame(layout=col12, title='Details TO Enter')]]
+#          [sg.Button('Previous Frame', size=(15, 1)), sg.Button('Next Frame', size=(15, 1))],
+#          [sg.Text('Change Assets')],
+#          [sg.Button('Previous Asset', size=(15, 1)), sg.Button('Next Asset', size=(15, 1))],
+#          [sg.Button('EXIT', size=(15, 1)), sg.Text('Frame no: '), Input],
+#          [sg.Text('FINAL SUBMISSION')],
+#          [sg.Button('Upload', size=(15, 1))],
+#          [sg.Text(' '), Error]]
+
+# layout = [[col11, sg.Frame(layout=col12, title='Details TO Enter')]]
 
 
 def save_json(data, CSV):
@@ -68,8 +71,8 @@ def final_verify(ip=None, json=None, stream=False):
              [sg.Button('Submit Video', size=(15, 1))],
              [sg.Button('START', size=(15, 1))],
              [sg.Text('MODIFY MASTER')],
-             [sg.Text('Comment ', size=(18, 1)), sg.InputText('', key='comment', size=(38, 1))],
-             [sg.Text('Remark ', size=(18, 1)), sg.InputText('', key='remark', size=(38, 1))],
+             [sg.Text('Comment ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='comment')],
+             [sg.Text('Remark ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='remark')],
              [sg.Button('Add Info', size=(15, 1))],
              [sg.Button('Replace Image', size=(15, 1))],
 
@@ -91,6 +94,9 @@ def final_verify(ip=None, json=None, stream=False):
 
     window = sg.Window('Data Verification Toolbox',
                        layout, resizable=True, finalize=True, return_keyboard_events=True, use_default_focus=False)
+    window['comment'].update(values=COMMENT)
+    window['remark'].update(values=REMARK)
+
     window.finalize()
     index = 0
     output_frame = 0
