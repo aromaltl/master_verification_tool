@@ -338,7 +338,7 @@ def verify():
                 ret = True
                 PAUSE = True
                 asset_seen = set()
-                cv2.namedWindow("OUT", cv2.WINDOW_NORMAL)
+                # cv2.namedWindow("OUT", cv2.WINDOW_NORMAL)
                 while True:
                     new_asset = False
                     if not PAUSE:
@@ -393,8 +393,7 @@ def verify():
             frame = cv2.resize(frame, (1280, 720))
             imgbytes = cv2.imencode('.png', frame)[1].tobytes()
             window['image'].update(data=imgbytes)
-            # import keyboard
-            # print("@@@@@@@",keyboard.is_pressed("shift"))
+
 
 
 if __name__ == "__main__":
