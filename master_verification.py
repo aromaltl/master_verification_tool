@@ -45,7 +45,7 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
          [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
 
          [sg.Button('PREVIOUS', size=(15, 1)), sg.Button('NEXT', size=(15, 1))],
-         [sg.Button('Generate'),sg.Text('<-Generate final json and images', size=(35, 1))],
+         [sg.Button('Generate'), sg.Text('<-Generate final json and images', size=(35, 1))],
          [sg.Button('SAVE FRAME', size=(15, 1)), sg.Button('EXIT', size=(15, 1)), sg.Text('', key='text'), Output,
           sg.Text('Frame no: '), Input]]
 
@@ -63,7 +63,7 @@ def asset_select_window(keys, cols):
 
     layout.append([sg.InputText('', key='New_Asset', size=(58, 1)), sg.Button('ADD_NEW_ASSET', size=(18, 1))])  # ,
     win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True,
-                    element_justification='c')
+                    element_justification='c', return_keyboard_events=True)
     win.hide()
     return win
 
@@ -235,7 +235,7 @@ def verify():
 
                 ret, frame = cap.read()
                 # cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WND_PROP_TOPMOST)
-                cv2.setWindowProperty("select the area",  cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
                 # cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_AUTOSIZE)
                 r = cv2.selectROI("select the area", frame)
                 cv2.destroyWindow("select the area")
@@ -338,7 +338,8 @@ def verify():
                 ret = True
                 PAUSE = True
                 asset_seen = set()
-                # cv2.namedWindow("OUT", cv2.WINDOW_NORMAL)
+                cv2.namedWindow("OUT", cv2.WND_PROP_FULLSCREEN)
+                cv2.setWindowProperty("OUT", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
                 while True:
                     new_asset = False
                     if not PAUSE:
@@ -393,7 +394,6 @@ def verify():
             frame = cv2.resize(frame, (1280, 720))
             imgbytes = cv2.imencode('.png', frame)[1].tobytes()
             window['image'].update(data=imgbytes)
-
 
 
 if __name__ == "__main__":
