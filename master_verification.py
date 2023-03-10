@@ -63,7 +63,7 @@ def asset_select_window(keys, cols):
 
     layout.append([sg.InputText('', key='New_Asset', size=(58, 1)), sg.Button('ADD_NEW_ASSET', size=(18, 1))])  # ,
     win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True,
-                    element_justification='c', return_keyboard_events=True)
+                    element_justification='c', return_keyboard_events=False)
     win.hide()
     return win
 
