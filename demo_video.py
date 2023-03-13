@@ -6,8 +6,9 @@ import glob
 import os
 
 assets_dic={}
-videos=list(glob.glob("/home/tl028/Downloads/1/*.MP4"))
+videos=list(glob.glob("/run/user/1000/gvfs/afp-volume:host=Anton.local,user=ml_support,volume=MachineLearning/POC/Jubail Royal Commission/takeleap_jubail-royal-commission_2023-02-05_1225/Jubail Royal Commission/jub/*.MP4"))
 videos.sort()
+print(videos)
 counter={}
 cap=cv2.VideoCapture(videos[0])
 dirname = os.path.basename(videos[0])
@@ -24,12 +25,13 @@ def addBBox(im, frameNo,data):
         for items in data[str(frameNo)][ass]:
             if ass not in assets_dic:
                 assets_dic[ass]={}
-                counter[ass]=1
+                if ass not in counter:
+                    counter[ass]=1
             if items[0] not in assets_dic[ass]:
                 assets_dic[ass][items[0]]=counter[ass]
                 counter[ass]+=1
-            print()
-            draw_bounding_box(im, (items[1][0],items[1][1],items[2][0],items[2][1]), labels=[str(counter[ass]), ass], color='green') 
+            # print()
+            draw_bounding_box(im, (items[1][0],items[1][1],items[2][0],items[2][1]), labels=[str(assets_dic[ass][items[0]]), ass], color='green') 
     return im
 
 for x in videos:
@@ -51,6 +53,7 @@ for x in videos:
         frame_no+=2
         cv2.imshow("out_",frame[::2,::2])
         writer.write(frame)
+    assets_dic={}
 writer.release()
 
 
