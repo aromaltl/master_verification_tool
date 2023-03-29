@@ -334,7 +334,7 @@ def verify():
                 save_json(data, CSV)
                 delete_val = ""
 
-            if event == 'PLAY' or 'space:' in event.lower() or event == " ":
+            if event == 'PLAY' or 'space:' in event.lower() and 'back' not in event.lower() or event == " ": # backspace should not activate
                 ret = True
                 PAUSE = True
                 asset_seen = set()
