@@ -34,10 +34,10 @@ def generate(cap, data, video_name):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     final_json = {"Assets": []}
     for asset in data:
-        nth_last = 8
+        nth_last = 6
         print(asset)
         if 'Light' in asset:
-            nth_last = 12
+            nth_last = 6
 
         for ids in data[asset]:
             val = data[asset][ids][-min(nth_last, len(data[asset][ids]))]
