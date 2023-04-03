@@ -7,6 +7,7 @@ import cv2
 import ast
 import json
 import time
+
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
@@ -164,11 +165,12 @@ def verify():
 
         if event == 'EXIT' or event == sg.WIN_CLOSED:
             return
-        if event == 'Go':
+        if event == 'Go' or ( len(values['skip']) and ("Return" in event or event == "\r") ):
             if int(values['skip']) % 2 == 0:
                 output_frame = int(values['skip'])
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
+            window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
         if event == 'Submit Videos':
             ip = values['-IN-']
@@ -333,6 +335,7 @@ def verify():
                         break
                 save_json(data, CSV)
                 delete_val = ""
+                window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
             if event == 'PLAY' or 'space:' in event.lower() and 'back' not in event.lower() or event == " ": # backspace should not activate
                 ret = True

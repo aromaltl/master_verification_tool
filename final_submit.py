@@ -56,6 +56,8 @@ def load_json(CSV):
     return data
 
 
+# assets_list = [(x,i,j) for x in range(len())]
+
 def final_verify(ip=None, json=None, stream=False):
     col11 = sg.Image(key='image')
     Output = sg.Text()
