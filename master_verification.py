@@ -243,10 +243,11 @@ def verify():
                 cv2.destroyWindow("select the area")
                 if sum(r) == 0:
                     continue
-                if type(delete_val) is str and len(delete_val):
-                    addtoJSON(output_frame, PREV_SELECTED_ASSET, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,
-                              delete_val)
-                else:
+                # if type(delete_val) is str and len(delete_val):
+                #     addtoJSON(output_frame, PREV_SELECTED_ASSET, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,
+                #               delete_val)
+                # else:
+                if 1:
                     data[PREV_SELECTED_ASSET] += 1
                     addtoJSON(output_frame, PREV_SELECTED_ASSET, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,
                               data[PREV_SELECTED_ASSET])
