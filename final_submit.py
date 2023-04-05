@@ -9,7 +9,7 @@ import json
 import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
-
+import copy
 col11 = sg.Image(key='image')
 Output = sg.Text()
 Input = sg.Text()
@@ -133,11 +133,11 @@ def final_verify(ip=None, json=None, stream=False):
 
         if event == "Next Asset":
             index = min(index + 1, total_assets - 1)
-            current = data["Assets"][index]
+            current = copy.deepcopy(data["Assets"][index])
             output_frame = current[2]
         if event == 'Previous Asset':
             index = max(0, index - 1)
-            current = data["Assets"][index]
+            current = copy.deepcopy(data["Assets"][index])
             output_frame = current[2]
         if event == 'Previous Frame':
             output_frame = output_frame - 2
@@ -157,6 +157,7 @@ def final_verify(ip=None, json=None, stream=False):
             data["Assets"][index][2]=output_frame
             data["Assets"][index][3]=[r[0], r[1]]
             data["Assets"][index][4]=[r[2] + r[0], r[3] + r[1]]
+            # print(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
             if os.path.exists(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"):
                 os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
             # print(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
