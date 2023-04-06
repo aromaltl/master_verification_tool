@@ -171,7 +171,7 @@ def verify():
                 if str(output_frame) not in data:
                     data[str(output_frame)] = {}
             window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
-            values['skip']=''
+            window['skip'].Update('')
         if event == 'Submit Videos':
             ip = values['-IN-']
             CSV = values['CSV']
