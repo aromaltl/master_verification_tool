@@ -37,7 +37,7 @@ def generate(cap, data, video_name):
         nth_last = 6
         print(asset)
         if 'Light' in asset:
-            nth_last = 6
+            nth_last = 10
 
         for ids in data[asset]:
             val = data[asset][ids][-min(nth_last, len(data[asset][ids]))]
