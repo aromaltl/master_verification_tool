@@ -58,7 +58,7 @@ def generate(cap, data, video_name):
         f1=eval(open(f"Upload_Images/{video_name}/{video_name}_final.json", "r").read())
         for i,asset1 in enumerate(final_json["Assets"]):
             for asset2 in f1["Assets"]:
-                print(asset1,asset2)
+                # print(asset1,asset2)
                 if asset1[:2]==asset2[:2]:
                     final_json["Assets"][i]=asset2
                     break
