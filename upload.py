@@ -40,7 +40,7 @@ def generate(cap, data, video_name):
             nth_last = 10
 
         for ids in data[asset]:
-            val = data[asset][ids][-min(nth_last, len(data[asset][ids]))]
+            val = data[asset][ids][-min(nth_last, len(data[asset][ids])-1)]
             if (val[1][0] + val[2][0]) / 2 > width / 2:
                 Asset = "RIGHT_" + asset
             else:
