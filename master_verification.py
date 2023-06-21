@@ -11,6 +11,7 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
+from config import config
 
 """
 LAYOUT DESIGN
@@ -84,6 +85,7 @@ def load_json(CSV):
     f = open(CSV, "r")
     file = f.read()
     data = json.loads(file)
+    # data = eval(file)
     return data
 
 
@@ -136,7 +138,8 @@ def verify():
     stream = False
     output_frame = 0
     Shift = False
-
+    delay = 0.008 / config['speed']
+    play_size = config["play_size"]
     ip = ''
     PREV_SELECTED_ASSET = ''
     delete_val = ''
@@ -165,7 +168,7 @@ def verify():
 
         if event == 'EXIT' or event == sg.WIN_CLOSED:
             return
-        if event == 'Go' or ( len(values['skip']) and ("Return" in event or event == "\r") ):
+        if event == 'Go' or (len(values['skip']) and ("Return" in event or event == "\r")):
             if int(values['skip']) % 2 == 0:
                 output_frame = int(values['skip'])
                 if str(output_frame) not in data:
@@ -338,7 +341,7 @@ def verify():
                 delete_val = ""
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
-            if event == 'PLAY' or 'space:' in event.lower() and 'back' not in event.lower() or event == " ": # backspace should not activate
+            if event == 'PLAY' or 'space:' in event.lower() and 'back' not in event.lower() or event == " ":  # backspace should not activate
                 ret = True
                 PAUSE = True
                 asset_seen = set()
@@ -367,9 +370,9 @@ def verify():
                                                       labels=[items[0], ass],
                                                       color='purple', border_thickness=3, )
 
-                        frame = cv2.resize(frame, (1280, 720))
+                        frame = cv2.resize(frame, play_size)
                     cv2.imshow("OUT", frame)
-                    time.sleep(.008)
+                    time.sleep(delay)
 
                     key_press = cv2.waitKey(1)
 

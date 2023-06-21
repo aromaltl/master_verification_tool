@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 import json
 import os
 from opencv_draw_annotation import draw_bounding_box
+from config import config
 
 
 def converting_to_asset_format(data_json, total_frames):
@@ -34,13 +35,13 @@ def generate(cap, data, video_name):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     final_json = {"Assets": []}
     for asset in data:
-        nth_last = 6
+        nth_last = config['other_asset_nth_last']
         print(asset)
         if 'Light' in asset:
-            nth_last = 10
+            nth_last = config['light_nth_last']
 
         for ids in data[asset]:
-            val = data[asset][ids][-min(nth_last, len(data[asset][ids])-1)]
+            val = data[asset][ids][-min(nth_last, len(data[asset][ids]))]
             if (val[1][0] + val[2][0]) / 2 > width / 2:
                 Asset = "RIGHT_" + asset
             else:
