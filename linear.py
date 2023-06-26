@@ -17,13 +17,12 @@ from config import config
 LAYOUT DESIGN
 """
 
-# assets_list = ['LEFT_Signboard_Caution_Board', 'RIGHT_Signboard_Caution_Board', 'LEFT_Signboard_Chevron_Board', 'RIGHT_Signboard_Chevron_Board', 'LEFT_Signboard_Gantry_Board', 'RIGHT_Signboard_Gantry_Board', 'LEFT_Signboard_Hazard_board', 'RIGHT_Signboard_Hazard_board', 'LEFT_Signboard_Information_Board', 'RIGHT_Signboard_Information_Board', 'LEFT_Signboard_Mandatory_Board', 'RIGHT_Signboard_Mandatory_Board', 'LEFT_VMS_Gantry', 'RIGHT_VMS_Gantry', 'LEFT_Delineator', 'RIGHT_Delineator', 'LEFT_ECB_(SOS)', 'RIGHT_ECB_(SOS)', 'LEFT_Encroachment', 'RIGHT_Encroachment', 'LEFT_Hectometer_stone', 'RIGHT_Hectometer_stone', 'LEFT_Kilometer_Stone', 'RIGHT_Kilometer_Stone', 'LEFT_Solar_blinker', 'RIGHT_Solar_blinker', 'LEFT_Double_Arm_Street_Light', 'RIGHT_Double_Arm_Street_Light', 'LEFT_Pot_Holes', 'RIGHT_Pot_Holes', 'LEFT_Street_Light_Slanding', 'RIGHT_Street_Light_Slanding', 'LEFT_Single_Arm_Light_Slanting', 'RIGHT_Single_Arm_Light_Slanting', 'LEFT_High_Mast_Light', 'RIGHT_High_Mast_Light', 'Chainage']
 global CSV
 
 CSV = None
 PLAY = True
 column = ''
-
+sg.theme('Dark')
 col11 = sg.Image(filename='bg2.png', key='image')  # Coloumn 1 = Image view
 Output = sg.Text()
 Input = sg.Text()
@@ -41,8 +40,8 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
          [sg.Button('Go', size=(18, 1))],
          [sg.Text('MODIFY MASTER')],
          # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
-         [sg.Button('Add Data', size=(15, 1))],
-         [sg.Button('TGLE ID', size=(15, 1)), id_info],
+         [sg.Button('Add Data', size=(15, 1)), id_info],
+         [sg.Button('TGLE ID', size=(15, 1))],
          [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40, 4), key='Delete_drop'),
           sg.Button('Select')],
          [sg.Text('NAVIGATE')],
@@ -56,6 +55,11 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
 
 # Join two columns
 def asset_select_window(keys, cols):
+    """
+    :param keys:
+    :param cols:
+    :return: window
+    """
     layout = []
     # print(keys)
     d = len(keys)
@@ -95,7 +99,7 @@ def addBBox(im, frameNo, data, id_freeze=False):
     color = 'green' if not id_freeze else 'blue'
     if id_freeze:
         draw_bounding_box(im, (20, 20, 20, 20), labels=['ID FREEZED!!!!'],
-                          color=color, font_scale=3)
+                          color='red', font_scale=3)
 
     if str(frameNo) not in data:
         data[str(frameNo)] = {}
@@ -129,13 +133,17 @@ def addtoJSON(frameNo, asset, bbox, data, id_):
 
 def verify():
     # Select Color Theme
+    """
+    main function
+    :return:
+    """
     try:
         os.mkdir("SavedImages")
     except:
         pass
-    df = pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
+    # df = pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
     # df
-    sg.theme('DarkPurple5')
+    sg.theme('Black')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip')]])]]
     # Frame windows
     window = sg.Window('Data Verification Toolbox',
@@ -213,6 +221,7 @@ def verify():
         if event == 'TGLE ID':
             id_freeze = not id_freeze
             if not id_freeze:
+                id_info.update(value='')
                 interpolate = []
 
         if event == 'STOP':
@@ -271,26 +280,27 @@ def verify():
                               data[PREV_SELECTED_ASSET])
                 frame = addBBox(frame, output_frame, data)
                 save_json(data, CSV)
+                id_info.update(value=f'{PREV_SELECTED_ASSET}:{str(data[PREV_SELECTED_ASSET])}')
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
                 # if id_freeze:
                 #     print('inside add freeze')
                 if [output_frame, r[0], r[1], r[2] + r[0], r[3] + r[1]] not in interpolate:
                     interpolate.append([output_frame, r[0], r[1], r[2] + r[0], r[3] + r[1]])
-                    print("new")
+                    # print("new")
                     if len(interpolate) > 1 and id_freeze and (interpolate[-1][0] - interpolate[-2][0] - 2) // 2:
                         inter = np.linspace(interpolate[-2], interpolate[-1],
                                             ((interpolate[-1][0] - interpolate[-2][0] - 2) // 2) + 2)[1:-1].astype(
                             np.int32)
-                        inter[:, 1:] += np.random.randint(-5, 5, inter[:, 1:].shape)
+                        inter[:, 1:] += np.random.randint(-4, 4, inter[:, 1:].shape)
                         for abc in inter:
                             addtoJSON(int(abc[0]), PREV_SELECTED_ASSET,
                                       [(int(abc[1]), int(abc[2])), (int(abc[3]), int(abc[4]))],
                                       data,
                                       data[PREV_SELECTED_ASSET])
                 save_json(data, CSV)
-                id_freeze=True
+                id_freeze = True
             if event == 'SAVE FRAME' or letter == 83:
-                ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
+                cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
                 ret, frame = cap.read()
                 frame = addBBox(frame, output_frame, data)
                 cv2.imwrite("SavedImages/" + os.path.basename(ip) + '_' + str(output_frame) + '.jpeg', frame)
@@ -320,6 +330,9 @@ def verify():
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
             if "Shift" in event:
                 Shift = not Shift
+                id_info.update(value='')
+                interpolate = []
+                id_freeze = False
 
             if event == "Generate":
                 pass
@@ -427,7 +440,7 @@ def verify():
             ret, frame = cap.read()
 
             window["slider"].update(value=output_frame)
-            id_info.update(value="ID FREEZED MODE" if id_freeze else "ID INCREMENT MODE")
+            # id_info.update(value="ID FREEZED MODE" if id_freeze else "ID INCREMENT MODE")
             Input.update(value=output_frame)
             frame = addBBox(frame, output_frame, data, id_freeze=id_freeze)
 
