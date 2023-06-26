@@ -54,6 +54,10 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
 
 # Join two columns
 def asset_select_window(keys, cols):
+    '''
+    creating window for asset selection
+    
+    '''
     layout = []
     # print(keys)
     d = len(keys)
@@ -71,6 +75,9 @@ def asset_select_window(keys, cols):
 
 
 def save_json(data, CSV):
+    '''
+    save json 
+    '''
     with open(CSV, "w") as outfile:
         json.dump(data, outfile)
 

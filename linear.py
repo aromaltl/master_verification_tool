@@ -9,7 +9,7 @@ import json
 import time
 
 from opencv_draw_annotation import draw_bounding_box
-# from upload import converting_to_asset_format, generate, confirmation
+from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
 from config import config
 
@@ -56,9 +56,9 @@ col12 = [[sg.Text('ENTER VIDEO PATH')],
 # Join two columns
 def asset_select_window(keys, cols):
     """
-    :param keys:
-    :param cols:
-    :return: window
+    :param keys:assets
+    :param cols: number of columns
+    :return: pysimplegui window
     """
     layout = []
     # print(keys)
@@ -335,15 +335,14 @@ def verify():
                 id_freeze = False
 
             if event == "Generate":
-                pass
-                # CONFIRM, wait = confirmation("Generate")
-                # if CONFIRM:
-                # asset_format = converting_to_asset_format(data, total_frames)
-                # generate(cap, asset_format, ip)
-                # window.close()
-                # wait.close()
-                # return ip
-                # wait.close()
+                CONFIRM, wait = confirmation("Generate")
+                if CONFIRM:
+                    asset_format = converting_to_asset_format(data, total_frames)
+                    generate(cap, asset_format, ip)
+                    window.close()
+                    wait.close()
+                    return ip
+                wait.close()
 
             # if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
             if ("delete" in event.lower() or event == "\x7f") and len(delete_val):
@@ -451,7 +450,7 @@ def verify():
 
 if __name__ == "__main__":
     ip = verify()
-    # if ip is not None:
-    #     v_name = os.path.basename(ip).replace(".MP4", "")
-    #     final_json = f"Upload_Images/{v_name}/{v_name}_final.json"
-    #     final_verify(ip, final_json)
+    if ip is not None:
+        v_name = os.path.basename(ip).replace(".MP4", "")
+        final_json = f"Upload_Images/{v_name}/{v_name}_final.json"
+        final_verify(ip, final_json)

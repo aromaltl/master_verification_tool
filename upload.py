@@ -47,21 +47,20 @@ def generate(cap, data, video_name):
             else:
                 Asset = "LEFT_" + asset
             # print(ids)
-            final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2],['','']])
+            final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2], ['', '']])
             cap.set(1, int(val[0]))
             ret, frame = cap.read()
             draw_bounding_box(frame, (val[1][0], val[1][1], val[2][0], val[2][1]), labels=[asset], color='green')
             cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(val[0])}_{Asset}_{str(ids)}.jpeg", frame)
     print("images Done!!!")
-    
 
     if os.path.exists(f"Upload_Images/{video_name}/{video_name}_final.json"):
-        f1=eval(open(f"Upload_Images/{video_name}/{video_name}_final.json", "r").read())
-        for i,asset1 in enumerate(final_json["Assets"]):
+        f1 = eval(open(f"Upload_Images/{video_name}/{video_name}_final.json", "r").read())
+        for i, asset1 in enumerate(final_json["Assets"]):
             for asset2 in f1["Assets"]:
                 # print(asset1,asset2)
-                if asset1[:2]==asset2[:2]:
-                    final_json["Assets"][i]=asset2
+                if asset1[:2] == asset2[:2]:
+                    final_json["Assets"][i] = asset2
                     break
 
     final_json["Assets"].sort(key=lambda yy: int(yy[2]))
