@@ -10,13 +10,15 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 import copy
+
 col11 = sg.Image(key='image')
 Output = sg.Text()
 Input = sg.Text()
 Error = sg.Text()
 Asset = sg.Text()
-REMARK=['Bent','Broken','Missing','Plant Overgrown','Paint Worn Off','Dirt','Not Working','Others']
-COMMENT=['Longitudinal Crack','Raveling Crack','Alligator Crack','Transverse Crack','Patching','Pothole']
+REMARK = ['Bent', 'Broken', 'Missing', 'Plant Overgrown', 'Paint Worn Off', 'Dirt', 'Not Working', 'Others']
+COMMENT = ['Longitudinal Crack', 'Raveling Crack', 'Alligator Crack', 'Transverse Crack', 'Patching', 'Pothole']
+
 
 # col12 = [[sg.Text('ENTER VIDEO PATH')],
 
@@ -66,12 +68,14 @@ def final_verify(ip=None, json=None, stream=False):
     Asset = sg.Text()
     comment = sg.Text()
     remark = sg.Text()
+    total = sg.Text()
+    # asset_no = sg.Text()
     col12 = [[sg.Text('ENTER VIDEO PATH')],
 
              [sg.Text('Input video Path', size=(16, 1)), sg.InputText('', key='-IN-', size=(32, 1)), sg.FileBrowse()],
              [sg.Text('Verified json Path', size=(16, 1)), sg.InputText('', key='JSON', size=(32, 1)), sg.FileBrowse()],
              [sg.Button('Submit Video', size=(15, 1))],
-             [sg.Button('START', size=(15, 1))],
+             [sg.Button('START', size=(15, 1)),total],
              [sg.Text('MODIFY MASTER')],
              [sg.Text('Comment ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='comment')],
              [sg.Text('Remark ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='remark')],
@@ -81,6 +85,7 @@ def final_verify(ip=None, json=None, stream=False):
              [sg.Text('Current Asset: '), Asset],
              [sg.Text('Remark: '), remark],
              [sg.Text('Comment: '), comment],
+             # [sg.Text('total'),sg.Text('current')]
              [sg.Text('Change Frames')],
 
              [sg.Button('Previous Frame', size=(15, 1)), sg.Button('Next Frame', size=(15, 1))],
@@ -125,6 +130,7 @@ def final_verify(ip=None, json=None, stream=False):
                 cap = cv2.VideoCapture(ip)
                 os.makedirs(f"Upload_Images/{video_name}", exist_ok=True)
                 stream = True
+
         except Exception as ex:
             Error.update(value=ex, text_color='red')
 
@@ -154,15 +160,15 @@ def final_verify(ip=None, json=None, stream=False):
             cv2.destroyWindow("select the area")
 
             # data["Assets"][index] = [current[0], current[1], output_frame, [r[0], r[1]], [r[2] + r[0], r[3] + r[1]]]
-            data["Assets"][index][2]=output_frame
-            data["Assets"][index][3]=[r[0], r[1]]
-            data["Assets"][index][4]=[r[2] + r[0], r[3] + r[1]]
+            data["Assets"][index][2] = output_frame
+            data["Assets"][index][3] = [r[0], r[1]]
+            data["Assets"][index][4] = [r[2] + r[0], r[3] + r[1]]
             # print(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
-            if os.path.exists(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"):
-                os.remove(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
+            if os.path.exists(
+                    f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg"):
+                os.remove(
+                    f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
             # print(f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg")
-
-
 
             current = data["Assets"][index]
             save_json(data, json)
@@ -181,10 +187,9 @@ def final_verify(ip=None, json=None, stream=False):
                               color='green')
 
         if event == "Replace Image":
-
             cv2.imwrite(
                 f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg", image)
-            
+
         if event == "Upload":
             CONFIRM, wait = confirmation("Upload")
             if CONFIRM:
@@ -192,10 +197,11 @@ def final_verify(ip=None, json=None, stream=False):
             wait.close()
             break
 
-        Asset.update(value=current[0])
+        Asset.update(value=current[0] + '  ' + str(index + 1))
 
         comment.update(value=current[5][0], text_color='Yellow')
         remark.update(value=current[5][1], text_color='Yellow')
+        total.update(value=f" Total :{total_assets}")
 
         Input.update(value=output_frame)
         image = cv2.resize(image, (1280, 720))
