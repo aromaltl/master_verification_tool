@@ -392,8 +392,8 @@ def verify():
                 cv2.destroyWindow("OUT")
             # output_frame = int(output_frame // 2) * 2
             if output_frame > total_frames - 1:
-                cap.set(cv2.CAP_PROP_POS_FRAMES, total_frames - 2)
-                output_frame = total_frames - 2
+                cap.set(cv2.CAP_PROP_POS_FRAMES, total_frames - 1)
+                output_frame = total_frames - 1
                 output_frame = int(output_frame // 2) * 2
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
 
