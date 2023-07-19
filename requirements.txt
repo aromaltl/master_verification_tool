@@ -1,0 +1,9 @@
+numpy
+opencv-draw-annotation
+opencv-python
+pandas
+PySimpleGUI
+python-dateutil
+pytz
+six
+tzdata
