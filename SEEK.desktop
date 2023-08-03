@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=SEEK
+#$(dirname -- $(readlink -fn -- "$0"))
+Terminal=true
+Type=Application
+Icon=bg2.png
+Exec= echo $(date) >> log.txt 2>&1 && ~/dev_env/bin/python3 master_verification.py >> log.txt 2>&1
+
