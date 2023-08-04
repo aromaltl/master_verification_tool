@@ -124,6 +124,9 @@ def drop_down_list(frame, data):
 
 def addtoJSON(frameNo, asset, bbox, data, id_):
     c = str(id_)
+    if str(frameNo) not in data:
+        data[str(frameNo)]={}
+
     try:
         data[str(frameNo)][asset].append([c, bbox[0], bbox[1]])
 
