@@ -121,6 +121,18 @@ def drop_down_list(frame, data):
             i.append([c[0], x])
     return i
 
+def next_asset(cap,data,output_frame,total_frames,asset_seen):
+    for new_frames in range(output_frame,total_frames - 1,2):
+        if str(new_frames) not in data:
+            data[str(new_frames)] = {}
+        for ass in data[str(new_frames)]:
+            for items in data[str(new_frames)][ass]:
+                if str(items[0]) + ass not in asset_seen:
+                    cap.set(1,new_frames-2)
+                    return new_frames-2
+
+    cap.set(1,int(total_frames/2)*2 - 2)
+    return int(total_frames/2)*2 - 2
 
 def addtoJSON(frameNo, asset, bbox, data, id_):
     c = str(id_)
@@ -421,12 +433,14 @@ def verify():
                     cv2.imshow("OUT", frame)
                     time.sleep(delay)
 
-                    key_press = cv2.waitKey(1)
+                    key_press = cv2.waitKey(1) & 0xff
 
-                    if key_press & 0xff == ord(' ') or new_asset:
+                    if key_press == ord(' ') or new_asset:
                         PAUSE = not PAUSE
-
-                    if not ret or key_press & 0xff == 27:
+                    if key_press == ord('w'):
+                        PAUSE=False
+                        output_frame=next_asset(cap,data,output_frame,total_frames,asset_seen)
+                    if not ret or key_press == 27:
                         break
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
                 cv2.destroyWindow("OUT")
