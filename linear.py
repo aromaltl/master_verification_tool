@@ -95,18 +95,20 @@ def load_json(CSV):
     return data
 
 
-def addBBox(im, frameNo, data, id_freeze=False):
-    color = 'green' if not id_freeze else 'blue'
-    if id_freeze:
-        draw_bounding_box(im, (20, 20, 20, 20), labels=['ID FREEZED!!!!'],
-                          color='red', font_scale=3)
+def addBBox(im, frameNo, data, id_freeze=False,interpolate=[]):
+    # color = 'green' if not id_freeze else 'blue'
+
 
     if str(frameNo) not in data:
         data[str(frameNo)] = {}
     for ass in data[str(frameNo)]:
         for items in data[str(frameNo)][ass]:
             draw_bounding_box(im, (items[1][0], items[1][1], items[2][0], items[2][1]), labels=[items[0], ass],
-                              color=color)
+                              color='green')
+    if id_freeze:
+        curnt = interpolate[-1]
+        draw_bounding_box(im, curnt[1:], labels=["FREEZE"],
+                          color='blue', )
     return im
 
 
@@ -277,6 +279,7 @@ def verify():
                 cv2.namedWindow("select the area", cv2.WINDOW_NORMAL)
 
                 ret, frame = cap.read()
+                frame = addBBox(frame, output_frame, data,id_freeze=id_freeze,interpolate=interpolate)
                 # cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WND_PROP_TOPMOST)
                 cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
                 # cv2.setWindowProperty("select the area", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_AUTOSIZE)
@@ -293,7 +296,8 @@ def verify():
                         data[PREV_SELECTED_ASSET] += 1
                     addtoJSON(output_frame, PREV_SELECTED_ASSET, [(r[0], r[1]), (r[2] + r[0], r[3] + r[1])], data,
                               data[PREV_SELECTED_ASSET])
-                frame = addBBox(frame, output_frame, data)
+                # frame = addBBox(frame, output_frame, data)
+                frame = addBBox(frame, output_frame, data,id_freeze=id_freeze,interpolate=interpolate)
                 save_json(data, CSV)
                 id_info.update(value=f'{PREV_SELECTED_ASSET}:{str(data[PREV_SELECTED_ASSET])}')
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
@@ -417,7 +421,7 @@ def verify():
                         if str(output_frame) not in data:
                             data[str(output_frame)] = {}
 
-                        frame = addBBox(frame, output_frame, data)
+                        frame = addBBox(frame, output_frame, data,id_freeze=id_freeze,interpolate=interpolate)
                         # frame = addBBox(frame, output_frame, data)
 
                         for ass in data[str(output_frame)]:
@@ -458,7 +462,8 @@ def verify():
             window["slider"].update(value=output_frame)
             # id_info.update(value="ID FREEZED MODE" if id_freeze else "ID INCREMENT MODE")
             Input.update(value=output_frame)
-            frame = addBBox(frame, output_frame, data, id_freeze=id_freeze)
+
+            frame = addBBox(frame, output_frame, data,id_freeze=id_freeze,interpolate=interpolate)
 
             frame = cv2.resize(frame, (1280, 720))
             imgbytes = cv2.imencode('.png', frame)[1].tobytes()
