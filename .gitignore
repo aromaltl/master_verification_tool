@@ -1,5 +1,4 @@
 *.csv
 *.json
-*.txt
 */
-!nlohmann/*.hpp
+!/nlohmann/*.hpp
