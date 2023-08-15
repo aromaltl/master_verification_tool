@@ -15,17 +15,19 @@ std::string convert_format(std::string & u, int total_frames) {
     for (int i=0; i<total_frames;i+=2){ 
         for (const auto& v1 : j[std::to_string(i)].items()) {
 
-            // if (!n.contains(v1.key() )){n[v1.key()]={};}
+            if (!n.contains(v1.key() )){n[v1.key()]={};}
 
 
             for (const auto& v2 : v1.value().items()){
-                if (!n.contains(v1.key() )){n[v1.key()]={};}
+
                 if (!n[v1.key()].contains(v2.value().at(0))){n[v1.key()][v2.value().at(0)]={};}
 
                 n[v1.key()][v2.value().at(0)].push_back({i,v2.value().at(1),v2.value().at(2)});
             }
+            if (n[v1.key()].empty()){n.erase(v1.key());}
             // std::cout << "Key: " << key << ", Value: " << value << std::endl;
-    }}
+    }
+    }
     // int s = 0;
     // for (const auto & v1 : n.items()){
     //     for (const auto & v2 : v1.value().items()){
