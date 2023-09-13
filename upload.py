@@ -7,16 +7,16 @@ from config import config
 
 
 def converting_to_asset_format(data_json, total_frames):
-    try:
-        print("converting_to_asset_format cpp started...")
-        import convert 
-        data = convert.convert_format(json.dumps(data_json),total_frames)
-        data = json.loads(data)
-        # print(data)
-        print("converting_to_asset_format cpp ended!!")
-        return data
-    except Exception as ex:
-        print(f"Error in cpp convert convert:{ex}")
+    # try:
+    #     print("converting_to_asset_format cpp started...")
+    #     import convert 
+    #     data = convert.convert_format(json.dumps(data_json),total_frames)
+    #     data = json.loads(data)
+    #     # print(data)
+    #     print("converting_to_asset_format cpp ended!!")
+    #     return data
+    # except Exception as ex:
+    #     print(f"Error in cpp convert convert:{ex}")
 
     data = {}
     print("converting_to_asset_format started...")

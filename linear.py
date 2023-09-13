@@ -105,7 +105,7 @@ def addBBox(im, frameNo, data, id_freeze=False,interpolate=[]):
         for items in data[str(frameNo)][ass]:
             draw_bounding_box(im, (items[1][0], items[1][1], items[2][0], items[2][1]), labels=[items[0], ass],
                               color='green')
-    if id_freeze:
+    if id_freeze and len(interpolate):
         curnt = interpolate[-1]
         draw_bounding_box(im, curnt[1:], labels=["FREEZE"],
                           color='blue', )
