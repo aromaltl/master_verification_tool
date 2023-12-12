@@ -111,7 +111,10 @@ def final_verify(ip=None, json=None, stream=False):
         event, values = window.read()
         # print(event,values)
         if event == 'EXIT' or event == sg.WIN_CLOSED:
-            break
+            window.close()
+
+            return False,output_frame
+            # break
 
         try:
             if event == 'Submit Video':
@@ -195,7 +198,9 @@ def final_verify(ip=None, json=None, stream=False):
             if CONFIRM:
                 pass
             wait.close()
-            break
+            window.close()
+            return True,0
+            # break
 
         Asset.update(value=current[0] + '  ' + str(index + 1))
 
@@ -207,7 +212,8 @@ def final_verify(ip=None, json=None, stream=False):
         image = cv2.resize(image, (1280, 720))
         imgbytes = cv2.imencode('.png', image)[1].tobytes()  # ditto
         window['image'].update(data=imgbytes)
-
+    window.close()
+    return False,output_frame
 
 if __name__ == "__main__":
     final_verify()

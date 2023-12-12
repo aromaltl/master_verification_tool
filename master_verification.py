@@ -22,34 +22,34 @@ global CSV
 
 CSV = None
 PLAY = True
-column = ''
+# column = ''
 
-col11 = sg.Image(filename='bg2.png', key='image')  # Coloumn 1 = Image view
-Output = sg.Text()
-Input = sg.Text()
-Error = sg.Text()
-col12 = [[sg.Text('ENTER VIDEO PATH')],
-         # [sg.Slider(range=(0, 1000), default_value=0, size=(50, 10), orientation="h",enable_events=True, key="slider")],
-         [sg.Text('Input video Path', size=(18, 1)), sg.InputText('', key='-IN-', size=(38, 1)), sg.FileBrowse()],
-         [sg.Text('Normalized CSV File ', size=(18, 1)), sg.InputText('', key='CSV', size=(38, 1)), sg.FileBrowse()],
-         [sg.Button('Submit Videos')],
-         [sg.Text('VIDEO PLAY')],
-         [sg.Button('PLAY', size=(18, 1))],
-         [sg.Text('ENTER FRAME NUMBER TO JUMP IN')],
-         [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key='skip', size=(38, 1))],
-         [sg.Button('Go', size=(18, 1))],
-         [sg.Text('MODIFY MASTER')],
-         # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
-         [sg.Button('Add Data', size=(15, 1))],
-         [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40, 4), key='Delete_drop'),
-          sg.Button('Select')],
-         [sg.Text('NAVIGATE')],
-         [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
+# col11 = sg.Image(filename='bg2.png', key='image')  # Coloumn 1 = Image view
+# Output = sg.Text()
+# Input = sg.Text()
+# Error = sg.Text()
+# col12 = [[sg.Text('ENTER VIDEO PATH')],
+#          # [sg.Slider(range=(0, 1000), default_value=0, size=(50, 10), orientation="h",enable_events=True, key="slider")],
+#          [sg.Text('Input video Path', size=(18, 1)), sg.InputText('', key='-IN-', size=(38, 1)), sg.FileBrowse()],
+#          [sg.Text('Normalized CSV File ', size=(18, 1)), sg.InputText('', key='CSV', size=(38, 1)), sg.FileBrowse()],
+#          [sg.Button('Submit Videos')],
+#          [sg.Text('VIDEO PLAY')],
+#          [sg.Button('PLAY', size=(18, 1))],
+#          [sg.Text('ENTER FRAME NUMBER TO JUMP IN')],
+#          [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key='skip', size=(38, 1))],
+#          [sg.Button('Go', size=(18, 1))],
+#          [sg.Text('MODIFY MASTER')],
+#          # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
+#          [sg.Button('Add Data', size=(15, 1))],
+#          [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40, 4), key='Delete_drop'),
+#           sg.Button('Select')],
+#          [sg.Text('NAVIGATE')],
+#          [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
 
-         [sg.Button('PREVIOUS', size=(15, 1)), sg.Button('NEXT', size=(15, 1))],
-         [sg.Button('Generate'), sg.Text('<-Generate final json and images', size=(35, 1))],
-         [sg.Button('SAVE FRAME', size=(15, 1)), sg.Button('EXIT', size=(15, 1)), sg.Text('', key='text'), Output,
-          sg.Text('Frame no: '), Input]]
+#          [sg.Button('PREVIOUS', size=(15, 1)), sg.Button('NEXT', size=(15, 1))],
+#          [sg.Button('Generate'), sg.Text('<-Generate final json and images', size=(35, 1))],
+#          [sg.Button('SAVE FRAME', size=(15, 1)), sg.Button('EXIT', size=(15, 1)), sg.Text('', key='text'), Output,
+#           sg.Text('Frame no: '), Input]]
 
 
 # Join two columns
@@ -83,9 +83,9 @@ def save_json(data, CSV):
 
 
 #
-tab1 = [[col11, sg.Frame(layout=col12, title='Details TO Enter')],
-        [sg.Slider(range=(0, 1000), default_value=0, size=(200, 5), tick_interval=500, orientation="h",
-                   enable_events=True, key="slider")]]
+# tab1 = [[col11, sg.Frame(layout=col12, title='Details TO Enter')],
+#         [sg.Slider(range=(0, 1000), default_value=0, size=(200, 5), tick_interval=500, orientation="h",
+#                    enable_events=True, key="slider")]]
 
 
 def load_json(CSV):
@@ -132,6 +132,8 @@ def next_asset(cap,data,output_frame,total_frames,asset_seen):
 
 def addtoJSON(frameNo, asset, bbox, data, id_):
     c = str(id_)
+    if str(frameNo) not in data:
+        data[str(frameNo)]={}
     try:
         data[str(frameNo)][asset].append([c, bbox[0], bbox[1]])
 
@@ -139,13 +141,44 @@ def addtoJSON(frameNo, asset, bbox, data, id_):
         data[str(frameNo)][asset] = [[c, bbox[0], bbox[1]]]
 
 
-def verify():
+def verify(ip=None,CSV=None,output_frame=0):
+    column = ''
+    PLAY = True
+    col11 = sg.Image(filename='bg2.png', key='image')  # Coloumn 1 = Image view
+    Output = sg.Text()
+    Input = sg.Text()
+    Error = sg.Text()
+    col12 = [[sg.Text('ENTER VIDEO PATH')],
+             # [sg.Slider(range=(0, 1000), default_value=0, size=(50, 10), orientation="h",enable_events=True, key="slider")],
+             [sg.Text('Input video Path', size=(18, 1)), sg.InputText('', key='-IN-', size=(38, 1)), sg.FileBrowse()],
+             [sg.Text('Normalized CSV File ', size=(18, 1)), sg.InputText('', key='CSV', size=(38, 1)), sg.FileBrowse()],
+             [sg.Button('Submit Videos')],
+             [sg.Text('VIDEO PLAY')],
+             [sg.Button('PLAY', size=(18, 1))],
+             [sg.Text('ENTER FRAME NUMBER TO JUMP IN')],
+             [sg.Text('Take Me To:', size=(18, 1)), sg.InputText('', key='skip', size=(38, 1))],
+             [sg.Button('Go', size=(18, 1))],
+             [sg.Text('MODIFY MASTER')],
+             # [sg.Button('Add Data', size=(15, 1)), sg.InputCombo([], size=(40,4), key='Coloumn'), sg.Button('Select1')],
+             [sg.Button('Add Data', size=(15, 1))],
+             [sg.Button('Delete Data', size=(15, 1)), sg.InputCombo([], size=(40, 4), key='Delete_drop'),
+              sg.Button('Select')],
+             [sg.Text('NAVIGATE')],
+             [sg.Button('START', size=(15, 1)), sg.Button('STOP', size=(15, 1))],
+
+             [sg.Button('PREVIOUS', size=(15, 1)), sg.Button('NEXT', size=(15, 1))],
+             [sg.Button('Generate'), sg.Text('<-Generate final json and images', size=(35, 1))],
+             [sg.Button('SAVE FRAME', size=(15, 1)), sg.Button('EXIT', size=(15, 1)), sg.Text('', key='text'), Output,
+              sg.Text('Frame no: '), Input]]
     # Select Color Theme
+    tab1 = [[col11, sg.Frame(layout=col12, title='Details TO Enter')],
+        [sg.Slider(range=(0, 1000), default_value=0, size=(200, 5), tick_interval=500, orientation="h",
+                   enable_events=True, key="slider")]]
     try:
         os.mkdir("SavedImages")
     except:
         pass
-    df = pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
+    # df = pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
     # df
     sg.theme('DarkGrey5')
     layout = [[sg.TabGroup([[sg.Tab('Data Verification', tab1, tooltip='tip')]])]]
@@ -154,16 +187,18 @@ def verify():
                        layout, resizable=True, finalize=True, return_keyboard_events=True, use_default_focus=False)
 
     window.finalize()
-    stream = False
-    output_frame = 0
+    # stream = False
+    # output_frame = 0
     Shift = False
+    stream=False
     delay = 0.008 / config['speed']
     play_size = config["play_size"]
-    ip = ''
+    # ip = ''
     PREV_SELECTED_ASSET = ''
     delete_val = ''
-
+    
     while True:
+
         letter = None
         event, values = window.read()
 
@@ -186,7 +221,7 @@ def verify():
         # text_el em.update(event)
 
         if event == 'EXIT' or event == sg.WIN_CLOSED:
-            return
+            return 
         if event == 'Go' or (len(values['skip']) and ("Return" in event or event == "\r")):
             if int(values['skip']) % 2 == 0:
                 output_frame = int(values['skip'])
@@ -194,9 +229,13 @@ def verify():
                     data[str(output_frame)] = {}
             window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
             window['skip'].Update('')
+        # print(ip)
         if event == 'Submit Videos':
-            ip = values['-IN-']
-            CSV = values['CSV']
+            if ip is None:
+                ip = values['-IN-']
+            if CSV  is None:
+                CSV = values['CSV']
+        if CSV is not None:
             data = load_json(CSV)
 
         if event == 'START':
@@ -316,7 +355,7 @@ def verify():
                     generate(cap, asset_format, ip)
                     window.close()
                     wait.close()
-                    return ip
+                    return ip,CSV
                 wait.close()
 
             # if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
@@ -424,9 +463,16 @@ def verify():
             window['image'].update(data=imgbytes)
 
 
+
 if __name__ == "__main__":
-    ip = verify()
-    if ip is not None:
+    ip,CSV = verify()
+    breaker=True
+    while ip is not None:
+        print(ip,CSV)
         v_name = os.path.basename(ip).replace(".MP4", "")
         final_json = f"Upload_Images/{v_name}/{v_name}_final.json"
-        final_verify(ip, final_json)
+        breaker,output_frame=  final_verify(ip, final_json)
+        if breaker:
+            break
+        print("again going for verification")
+        verify(ip=ip,CSV=CSV,output_frame=output_frame)
