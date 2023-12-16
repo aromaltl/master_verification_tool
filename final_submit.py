@@ -91,7 +91,7 @@ def final_verify(ip=None, json=None, stream=False):
              [sg.Button('Previous Frame', size=(15, 1)), sg.Button('Next Frame', size=(15, 1))],
              [sg.Text('Change Assets')],
              [sg.Button('Previous Asset', size=(15, 1)), sg.Button('Next Asset', size=(15, 1))],
-             [sg.Button('EXIT', size=(15, 1)), sg.Text('Frame no: '), Input],
+             [sg.Button('BACK', size=(15, 1)), sg.Text('Frame no: '), Input],
              [sg.Text('FINAL SUBMISSION')],
              [sg.Button('Upload', size=(15, 1))],
              [sg.Text(' '), Error]]
@@ -110,7 +110,7 @@ def final_verify(ip=None, json=None, stream=False):
     while True:
         event, values = window.read()
         # print(event,values)
-        if event == 'EXIT' or event == sg.WIN_CLOSED:
+        if event == 'BACK' or event == sg.WIN_CLOSED:
             window.close()
 
             return False,output_frame
