@@ -60,7 +60,7 @@ def load_json(CSV):
 
 # assets_list = [(x,i,j) for x in range(len())]
 
-def final_verify(ip=None, json=None, stream=False):
+def final_verify(ip=None, json=None, stream=False,index=0):
     col11 = sg.Image(key='image')
     Output = sg.Text()
     Input = sg.Text()
@@ -69,6 +69,7 @@ def final_verify(ip=None, json=None, stream=False):
     comment = sg.Text()
     remark = sg.Text()
     total = sg.Text()
+    far_asset = sg.Text()
     # asset_no = sg.Text()
     col12 = [[sg.Text('ENTER VIDEO PATH')],
 
@@ -80,7 +81,7 @@ def final_verify(ip=None, json=None, stream=False):
              [sg.Text('Comment ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='comment')],
              [sg.Text('Remark ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='remark')],
              [sg.Button('Add Info', size=(15, 1))],
-             [sg.Button('Replace Image', size=(15, 1))],
+             [sg.Button('Replace Image', size=(15, 1)),sg.Button('Far Asset', size=(15, 1)),far_asset],
 
              [sg.Text('Current Asset: '), Asset],
              [sg.Text('Remark: '), remark],
@@ -105,7 +106,7 @@ def final_verify(ip=None, json=None, stream=False):
     window['remark'].update(values=REMARK)
 
     window.finalize()
-    index = 0
+    # index = 0
     output_frame = 0
     while True:
         event, values = window.read()
@@ -113,7 +114,7 @@ def final_verify(ip=None, json=None, stream=False):
         if event == 'BACK' or event == sg.WIN_CLOSED:
             window.close()
 
-            return False,output_frame
+            return False,output_frame,index
             # break
 
         try:
@@ -124,21 +125,34 @@ def final_verify(ip=None, json=None, stream=False):
                 if json is None:
                     json = values['JSON']
             if event == "START":
+                print(ip,index,output_frame,"#########")
                 video_name = os.path.basename(ip).replace('.MP4', '')
                 data = load_json(json)
                 data["Assets"].sort(key=lambda val: val[2])
+                for each in  data["Assets"]:
+                    if len(each)==6:
+                        each.append(0)
                 total_assets = len(data["Assets"])
-                current = data["Assets"][0]
+                current = data["Assets"][index]
                 output_frame = current[2]
                 cap = cv2.VideoCapture(ip)
                 os.makedirs(f"Upload_Images/{video_name}", exist_ok=True)
                 stream = True
 
         except Exception as ex:
+            print(ex)
+            import sys
             Error.update(value=ex, text_color='red')
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+
 
         if not stream:
             continue
+
+
+
 
         if event == "Next Asset":
             index = min(index + 1, total_assets - 1)
@@ -152,6 +166,8 @@ def final_verify(ip=None, json=None, stream=False):
             output_frame = output_frame - 2
         if event == "Next Frame":
             output_frame = output_frame + 2
+
+
 
         cap.set(1, output_frame)
 
@@ -188,6 +204,9 @@ def final_verify(ip=None, json=None, stream=False):
 
             draw_bounding_box(image, (current[3][0], current[3][1], current[4][0], current[4][1]), labels=[label],
                               color='green')
+        if event == 'Far Asset':
+            data["Assets"][index][6]=(data["Assets"][index][6]+1)%2
+            save_json(data, json)
 
         if event == "Replace Image":
             cv2.imwrite(
@@ -199,7 +218,7 @@ def final_verify(ip=None, json=None, stream=False):
                 pass
             wait.close()
             window.close()
-            return True,0
+            return True,0,index
             # break
 
         Asset.update(value=current[0] + '  ' + str(index + 1))
@@ -207,13 +226,13 @@ def final_verify(ip=None, json=None, stream=False):
         comment.update(value=current[5][0], text_color='Yellow')
         remark.update(value=current[5][1], text_color='Yellow')
         total.update(value=f" Total :{total_assets}")
-
+        far_asset.update(value= str(bool(data["Assets"][index][6])),text_color='Yellow')
         Input.update(value=output_frame)
         image = cv2.resize(image, (1280, 720))
         imgbytes = cv2.imencode('.png', image)[1].tobytes()  # ditto
         window['image'].update(data=imgbytes)
     window.close()
-    return False,output_frame
+    return False,output_frame, index
 
 if __name__ == "__main__":
     final_verify()

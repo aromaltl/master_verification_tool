@@ -467,11 +467,12 @@ def verify(ip=None,CSV=None,output_frame=0):
 if __name__ == "__main__":
     ip,CSV = verify()
     breaker=True
+    index=0
     while ip is not None:
         print(ip,CSV)
         v_name = os.path.basename(ip).replace(".MP4", "")
         final_json = f"Upload_Images/{v_name}/{v_name}_final.json"
-        breaker,output_frame=  final_verify(ip, final_json)
+        breaker,output_frame,index=  final_verify(ip, final_json,index=index)
         if breaker:
             break
         print("again going for verification")
