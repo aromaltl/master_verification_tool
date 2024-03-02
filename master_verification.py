@@ -89,9 +89,13 @@ def save_json(data, CSV):
 
 
 def load_json(CSV):
-    f = open(CSV, "r")
-    file = f.read()
-    data = json.loads(file)
+    try:
+        f = open(CSV, "r")
+        file = f.read()
+        data = json.loads(file)
+    except Exception as ex:
+        print(ex)
+        data=eval(file)
     # data = eval(file)
     return data
 
