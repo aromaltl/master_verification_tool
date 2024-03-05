@@ -13,7 +13,7 @@ config = {
     "keys":{
         "right":'@#EWEA',
         "left": 'F#CTCFC'
-    }
+    },
     "remarks":['Direction of a toponym in the form of an arrow', 
                'Information_Board_Bus_Shelter_Ahead_M', 'Information_Board_Going_Straight_M', 
                'Information_Board_Parking_Brown_M', 'Information_Board_School_Ahead_M', 'Information_Board_Street_Name_Blue_M', 
