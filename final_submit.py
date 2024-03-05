@@ -10,7 +10,7 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 import copy
-import config
+from config import config
 
 col11 = sg.Image(key='image')
 Output = sg.Text()
