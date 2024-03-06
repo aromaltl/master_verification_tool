@@ -18,6 +18,8 @@ Input = sg.Text()
 Error = sg.Text()
 Asset = sg.Text()
 REMARK = ['Bent', 'Broken', 'Missing', 'Plant Overgrown', 'Paint Worn Off', 'Dirt', 'Not Working', 'Others']
+config["remarks"].sort()
+config["comment"].sort()
 REMARK = config["remarks"]
 COMMENT = config["comment"]
 
@@ -80,8 +82,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
              [sg.Button('Submit Video', size=(15, 1))],
              [sg.Button('START', size=(15, 1)),total],
              [sg.Text('MODIFY MASTER')],
-             [sg.Text('Comment ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='comment')],
-             [sg.Text('Remark ', size=(18, 1)), sg.InputCombo([], size=(38, 4), key='remark')],
+             [sg.Text('Comment ', size=(18, 1)), sg.InputCombo([], size=(38, 60), key='comment')],
+             [sg.Text('Remark ', size=(18, 1)), sg.InputCombo([], size=(38, 60), key='remark')],
              [sg.Button('Add Info', size=(15, 1))],
              [sg.Button('Replace Image', size=(15, 1)),sg.Button('Far Asset', size=(15, 1)),far_asset],
 

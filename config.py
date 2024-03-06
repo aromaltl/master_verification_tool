@@ -22,9 +22,9 @@ config = {
                'Caution_Board_Compulsory yielding of priority', 'Caution_Board_Crosswalk_Blue_M', 'Caution_Board_Crosswalk_Yellow_M', 'Caution_Board_Main_Road_M', 'Caution_Board_School_Ahead_M',
                'Caution_Board_Trams_M', 'Caution_Speed_Bumps_M', 'Compulsory direction of movement to the LEFT_M', 'Compulsory direction of movement to the right', 
                'Compulsory passage from the right or from the left side of the island', 'Compulsory passage only from the left side of the island', 
-               'Compulsory passage only from the right side of the island', 'compulsory_stop', 'Mandatory circular route', 
+               'Compulsory passage only from the right side of the island', 'Compulsory_stop', 'Mandatory circular route', 
                'Mandatory_Board_Going_Straight_M', 'Maximum speed limit', 'No entry for all vehicles', 
                'No Left Turn_M', 'No Right Turn_M', 'No Stopping_M', 
-               'No U_Turn Right_M', 'No U-Turn Left_M'],
+               'No U_Turn Right_M', 'No U-Turn Left_M','Additional Infornmation Board','Additional Caution Board','Additional Mandatory Board'],
     "comment":['Longitudinal Crack', 'Raveling Crack', 'Alligator Crack', 'Transverse Crack', 'Patching', 'Pothole']
 }
