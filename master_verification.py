@@ -12,6 +12,7 @@ from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
 from config import config
+from utils import mouse_call
 
 """
 LAYOUT DESIGN
@@ -206,7 +207,7 @@ def verify(ip=None,CSV=None,output_frame=0):
         letter = None
         event, values = window.read()
 
-        # print((event, values))
+        print((event, values))
         # print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
@@ -239,8 +240,8 @@ def verify(ip=None,CSV=None,output_frame=0):
                 ip = values['-IN-']
             if CSV  is None:
                 CSV = values['CSV']
-        if CSV is not None:
-            data = load_json(CSV)
+            if CSV is not None:
+                data = load_json(CSV)
 
         if event == 'START':
             if len(ip) > 0 and len(CSV) > 0:
@@ -409,14 +410,25 @@ def verify(ip=None,CSV=None,output_frame=0):
                 asset_seen = set()
                 cv2.namedWindow("OUT", cv2.WND_PROP_FULLSCREEN)
                 cv2.setWindowProperty("OUT", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                del_ast = mouse_call()
+                cv2.setMouseCallback('OUT',  del_ast.mclbk)
+                cap.set(1,output_frame)
+                ret,copy_frame=cap.read()
+                h,w,_ = copy_frame.shape
+
+                cap.set(1, output_frame)
                 while True:
                     new_asset = False
+                    # print(del_ast.ast,"#@@#@#")
                     if not PAUSE:
+                        del_ast.ast=None
                         output_frame += 2
                         ret, frame = cap.read()
                         ret, frame = cap.read()
+                        copy_frame = frame.copy()
                         if not ret:
                             break
+                        
                         if str(output_frame) not in data:
                             data[str(output_frame)] = {}
 
@@ -431,9 +443,20 @@ def verify(ip=None,CSV=None,output_frame=0):
                                     draw_bounding_box(frame, (items[1][0], items[1][1], items[2][0], items[2][1]),
                                                       labels=[items[0], ass],
                                                       color='purple', border_thickness=3, )
-
                         frame = cv2.resize(frame, play_size)
-                    cv2.imshow("OUT", frame)
+                        cv2.imshow("OUT", frame)
+
+                    elif del_ast.changed:
+                        del_ast.update(data,output_frame,total_frames)
+                        frame=addBBox(copy_frame.copy(), output_frame, data)
+                        frame = del_ast.highlight(frame)
+                        del_ast.changed = False
+                        save_json(data,CSV)
+                        cv2.imshow("OUT", frame)
+                    else:
+                        if (frame.shape != copy_frame).any():
+                            frame = cv2.resize(frame,(w,h))
+                        cv2.imshow("OUT", frame)
                     time.sleep(delay)
 
                     key_press = cv2.waitKey(1) & 0xff
@@ -444,7 +467,9 @@ def verify(ip=None,CSV=None,output_frame=0):
                         PAUSE=False
                         output_frame=next_asset(cap,data,output_frame,total_frames,asset_seen)
                     if not ret or key_press == 27:
+                        # del obj
                         break
+                del del_ast
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
                 cv2.destroyWindow("OUT")
             # output_frame = int(output_frame // 2) * 2
