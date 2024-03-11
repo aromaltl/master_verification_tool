@@ -201,13 +201,17 @@ def verify(ip=None,CSV=None,output_frame=0):
     # ip = ''
     PREV_SELECTED_ASSET = ''
     delete_val = ''
-    
+    window_read=True
     while True:
 
         letter = None
-        event, values = window.read()
+        
+        event_t, values_t = window.read()
+        if window_read:
+            event, values  =  event_t, values_t
 
-        print((event, values))
+
+        # print((event, values))
         # print()
         if event == 'slider':
             output_frame = int(int(values['slider']) // 2) * 2
@@ -276,6 +280,7 @@ def verify(ip=None,CSV=None,output_frame=0):
         if stream:
 
             if event == 'Add Data' or 'alt_l' in event.lower() or 'control_l' in event.lower():
+                
                 if event == 'Add Data' or 'alt_l' in event.lower():
                     asset_window.UnHide()
                     while True:
@@ -320,6 +325,8 @@ def verify(ip=None,CSV=None,output_frame=0):
                 frame = addBBox(frame, output_frame, data)
                 save_json(data, CSV)
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
+                if window_read == False:
+                    event=" "
 
             if event == 'SAVE FRAME' or letter == 83:
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
@@ -419,6 +426,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                 cap.set(1, output_frame)
                 while True:
                     new_asset = False
+                    window_read=True
                     # print(del_ast.ast,"#@@#@#")
                     if not PAUSE:
                         del_ast.ast=None
@@ -460,12 +468,17 @@ def verify(ip=None,CSV=None,output_frame=0):
                     time.sleep(delay)
 
                     key_press = cv2.waitKey(1) & 0xff
-
+                    # if key_press !=255:
+                        # print(key_press,"@#@#@")
                     if key_press == ord(' ') or new_asset:
                         PAUSE = not PAUSE
                     if key_press == ord('w'):
                         PAUSE=False
                         output_frame=next_asset(cap,data,output_frame,total_frames,asset_seen)
+                    if key_press == 233:
+                        window_read=False
+                        event = 'alt_l'
+                        break
                     if not ret or key_press == 27:
                         # del obj
                         break
@@ -490,6 +503,7 @@ def verify(ip=None,CSV=None,output_frame=0):
             frame = cv2.resize(frame, (1280, 720))
             imgbytes = cv2.imencode('.png', frame)[1].tobytes()
             window['image'].update(data=imgbytes)
+           
 
 
 
