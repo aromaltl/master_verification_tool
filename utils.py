@@ -15,7 +15,7 @@ class mouse_call:
         return img
 
     def mclbk(self,event, x, y, flags,param):
-        if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_MBUTTONDOWN:
+        if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_MBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN:
             self.input=event,x,y
             self.changed = True
 
@@ -29,7 +29,7 @@ class mouse_call:
             if self.ast is None:
                 for xx in data[str(framno)]:
                     for id, yy in enumerate(data[str(framno)][xx]):
-                        print(x,y,yy)
+                        # print(x,y,yy)
                         if  int(yy[1][0]) <= x <= int(yy[2][0]) and int(yy[1][1]) <= y <= int(yy[2][1]):
                             self.ast = yy,xx
                             self.changed =True
@@ -43,7 +43,6 @@ class mouse_call:
 
         if event == cv2.EVENT_MBUTTONDOWN and self.ast is not None:
             delete_val = self.ast
-            # delete_val[0]=delete_val[0][0]
             found = 25
             for x in range(output_frame, total_frames):
                 if x % 2 == 1:

@@ -301,6 +301,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                     asset_window.hide()
                     if column == "-WINDOW CLOSE ATTEMPTED-":
                         continue
+                event = event if window_read else " "
                 if len(PREV_SELECTED_ASSET) == 0:
                     continue
                 cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
@@ -325,8 +326,8 @@ def verify(ip=None,CSV=None,output_frame=0):
                 frame = addBBox(frame, output_frame, data)
                 save_json(data, CSV)
                 window['Delete_drop'].Update(values=drop_down_list(output_frame, data))
-                if window_read == False:
-                    event=" "
+
+                
 
             if event == 'SAVE FRAME' or letter == 83:
                 ret = cap.set(cv2.CAP_PROP_POS_FRAMES, output_frame)
@@ -468,10 +469,14 @@ def verify(ip=None,CSV=None,output_frame=0):
                     time.sleep(delay)
 
                     key_press = cv2.waitKey(1) & 0xff
-                    # if key_press !=255:
-                        # print(key_press,"@#@#@")
+
                     if key_press == ord(' ') or new_asset:
                         PAUSE = not PAUSE
+                    if  key_press == ord('s'):
+                        window_read=False
+                        event = 'control_l'
+                        break
+
                     if key_press == ord('w'):
                         PAUSE=False
                         output_frame=next_asset(cap,data,output_frame,total_frames,asset_seen)
