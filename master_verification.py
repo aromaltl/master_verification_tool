@@ -251,6 +251,7 @@ def verify(ip=None,CSV=None,output_frame=0):
             if len(ip) > 0 and len(CSV) > 0:
                 print('START')
                 cap = cv2.VideoCapture(str(ip))
+                w,h=int(cap.get(3)), int(cap.get(4))
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                 window["slider"].update(range=(0, total_frames - 1))
 
@@ -420,11 +421,12 @@ def verify(ip=None,CSV=None,output_frame=0):
                 cv2.setWindowProperty("OUT", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
                 del_ast = mouse_call()
                 cv2.setMouseCallback('OUT',  del_ast.mclbk)
-                cap.set(1,output_frame)
-                ret,copy_frame=cap.read()
-                h,w,_ = copy_frame.shape
+                # cap.set(1,output_frame)
+                # ret,copy_frame=cap.read()
+                # h,w,_ = copy_frame.shape
+                copy_frame=frame
 
-                cap.set(1, output_frame)
+                # cap.set(1, output_frame)
                 while True:
                     new_asset = False
                     window_read=True
