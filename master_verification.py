@@ -456,6 +456,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                                                       color='purple', border_thickness=3, )
                         frame = cv2.resize(frame, play_size)
                         cv2.imshow("OUT", frame)
+                        time.sleep(delay)
 
                     elif del_ast.changed:
                         del_ast.update(data,output_frame,total_frames)
@@ -468,7 +469,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                         if (frame.shape != copy_frame).any():
                             frame = cv2.resize(frame,(w,h))
                         cv2.imshow("OUT", frame)
-                    time.sleep(delay)
+                    
 
                     key_press = cv2.waitKey(1) & 0xff
 
