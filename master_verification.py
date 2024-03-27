@@ -436,9 +436,10 @@ def verify(ip=None,CSV=None,output_frame=0):
                         output_frame += 2
                         ret, frame = cap.read()
                         ret, frame = cap.read()
-                        copy_frame = frame.copy()
+                        
                         if not ret:
                             break
+                        copy_frame = frame.copy()
                         
                         if str(output_frame) not in data:
                             data[str(output_frame)] = {}
