@@ -45,6 +45,9 @@ def generate(cap, data, video_name):
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # float `width`
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     final_json = {"Assets": []}
+    
+
+
     for asset in data:
         nth_last = config["det_loc"]["default"]
         print(asset)
@@ -60,7 +63,8 @@ def generate(cap, data, video_name):
             else:
                 Asset = "LEFT_" + asset
             # print(ids)
-            final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2], ['', '']])
+            # name , id, frame , x1y1 , x2y2,[], frame_new
+            final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2], ['', ''],int(val[0])])
             cap.set(1, int(val[0]))
             ret, frame = cap.read()
             draw_bounding_box(frame, (val[1][0], val[1][1], val[2][0], val[2][1]), labels=[asset], color='green')
@@ -74,6 +78,11 @@ def generate(cap, data, video_name):
                 # print(asset1,asset2)
                 if asset1[:2] == asset2[:2]:
                     final_json["Assets"][i] = asset2
+                    cap.set(1, int(asset2[2]))
+                    ret, frame = cap.read()
+                    draw_bounding_box(frame, (asset2[3][0], asset2[3][1], asset2[4][0], asset2[4][1]), labels=[asset2[0]], color='green')
+                    os.remove(f"Upload_Images/{video_name}/{video_name}_{str(asset1[2])}_{asset1[0]}_{str(asset1[1])}.jpeg")
+                    cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(asset2[2])}_{asset2[0]}_{str(asset2[1])}.jpeg", frame)
                     break
 
     final_json["Assets"].sort(key=lambda yy: int(yy[2]))
