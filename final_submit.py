@@ -47,6 +47,24 @@ COMMENT = config["comment"]
 # layout = [[col11, sg.Frame(layout=col12, title='Details TO Enter')]]
 
 
+
+def show_near_frames(data,ind):
+    n=len(data["Assets"])
+    # fr=[data["Assets"][ind]]
+    bef=[]
+    aft=[[data["Assets"][ind][7]]]
+    for i in range(ind-1,max(0,ind-5),-1):
+        bef.append([data["Assets"][i][7]])
+    for i in range(ind+1,min(ind+5,n)):
+        aft.append([data["Assets"][i][7]])
+    # print(bef+aft)
+    return bef+aft
+        
+
+    
+
+
+
 def save_json(data, CSV):
     f = open(CSV, "w")
     f.write(str(data))
@@ -74,6 +92,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
     remark = sg.Text()
     total = sg.Text()
     far_asset = sg.Text()
+    new_pos = sg.Text()
     # asset_no = sg.Text()
     col12 = [[sg.Text('ENTER VIDEO PATH')],
 
@@ -86,6 +105,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
              [sg.Text('Remark ', size=(18, 1)), sg.InputCombo([], size=(38, 60), key='remark')],
              [sg.Button('Add Info', size=(15, 1))],
              [sg.Button('Replace Image', size=(15, 1)),sg.Button('Far Asset', size=(15, 1)),far_asset],
+             [sg.InputCombo([], size=(15, 7), key='New Pos'),sg.Button('Update Pos', size=(15, 1)),new_pos],
 
              [sg.Text('Current Asset: '), Asset],
              [sg.Text('Remark: '), remark],
@@ -103,11 +123,12 @@ def final_verify(ip=None, json=None, stream=False,index=0):
     if ip is not None:
         col12 = col12[4:]
     layout = [[col11, sg.Frame(layout=col12, title='Details TO Enter')]]
-
+    
     window = sg.Window('Data Verification Toolbox',
                        layout, resizable=True, finalize=True, return_keyboard_events=True, use_default_focus=False)
     window['comment'].update(values=COMMENT)
     window['remark'].update(values=REMARK)
+    
 
     window.finalize()
     # index = 0
@@ -142,6 +163,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
                 cap = cv2.VideoCapture(ip)
                 os.makedirs(f"Upload_Images/{video_name}", exist_ok=True)
                 stream = True
+                window['New Pos'].Update(values=show_near_frames(data,index))
+                new_pos.update(value=current[7])
 
         except Exception as ex:
             print(ex)
@@ -151,7 +174,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
 
-
+        
+        
         if not stream:
             continue
 
@@ -196,7 +220,10 @@ def final_verify(ip=None, json=None, stream=False,index=0):
             current = data["Assets"][index]
             save_json(data, json)
 
-            # save_json(data, json)
+        if event == 'Update Pos':
+            data["Assets"][index][7] = int(values['New Pos'][0])
+            current[7]=int(values['New Pos'][0])
+            save_json(data, json)
         if event == "Add Info":
             data["Assets"][index][5][0] = values["comment"]
             data["Assets"][index][5][1] = values["remark"]
@@ -224,7 +251,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
             window.close()
             return True,0,index
             # break
-
+        # print(current)
         Asset.update(value=current[0] + '  ' + str(index + 1))
 
         comment.update(value=current[5][0], text_color='Yellow')
@@ -233,8 +260,17 @@ def final_verify(ip=None, json=None, stream=False,index=0):
         far_asset.update(value= str(bool(data["Assets"][index][6])),text_color='Yellow')
         Input.update(value=output_frame)
         image = cv2.resize(image, (1280, 720))
+        new_pos.update(value=current[7])
+        # print(current[7],current[2])
+        if current[7]!=current[2]:
+            new_pos.update(value=current[7],text_color='Red')
+        else:
+            new_pos.update(value=current[7],text_color='Yellow')
         imgbytes = cv2.imencode('.png', image)[1].tobytes()  # ditto
         window['image'].update(data=imgbytes)
+        window['New Pos'].Update(values=show_near_frames(data,index))
+         
+
     window.close()
     return False,output_frame, index
 

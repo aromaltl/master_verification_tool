@@ -424,7 +424,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                 # cap.set(1,output_frame)
                 # ret,copy_frame=cap.read()
                 # h,w,_ = copy_frame.shape
-                copy_frame=frame
+                copy_frame=cv2.resize(frame,(w,h))
 
                 # cap.set(1, output_frame)
                 while True:
@@ -468,6 +468,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                         cv2.imshow("OUT", frame)
                     else:
                         if (frame.shape != copy_frame).any():
+                            # print(w,h,frame.shape, copy_frame)
                             frame = cv2.resize(frame,(w,h))
                         cv2.imshow("OUT", frame)
                     

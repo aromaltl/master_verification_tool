@@ -41,10 +41,15 @@ class mouse_call:
 
         output_frame=framno
 
-        if event == cv2.EVENT_MBUTTONDOWN and self.ast is not None:
+        if (event == cv2.EVENT_MBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN) and self.ast is not None:
             delete_val = self.ast
             found = 25
-            for x in range(output_frame, total_frames):
+            if event == cv2.EVENT_RBUTTONDOWN:
+                RANGE=range(output_frame+1, total_frames)
+            else:
+                RANGE=range(output_frame, total_frames)
+
+            for x in RANGE:
                 if x % 2 == 1:
                     continue
                 x = str(x)

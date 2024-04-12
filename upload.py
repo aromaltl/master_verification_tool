@@ -64,7 +64,7 @@ def generate(cap, data, video_name):
                 Asset = "LEFT_" + asset
             # print(ids)
             # name , id, frame , x1y1 , x2y2,[], frame_new
-            final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2], ['', ''],int(val[0])])
+            final_json["Assets"].append([Asset, int(ids), int(val[0]), val[1], val[2], ['', ''],0,int(val[0])])
             cap.set(1, int(val[0]))
             ret, frame = cap.read()
             draw_bounding_box(frame, (val[1][0], val[1][1], val[2][0], val[2][1]), labels=[asset], color='green')
