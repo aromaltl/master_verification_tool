@@ -133,6 +133,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
     window.finalize()
     # index = 0
     output_frame = 0
+
     while True:
         event, values = window.read()
         # print(event,values)
@@ -157,6 +158,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
                 for each in  data["Assets"]:
                     if len(each)==6:
                         each.append(0)
+                    if len(each) == 7:
+                        each.append(each[2])
                 total_assets = len(data["Assets"])
                 current = data["Assets"][index]
                 output_frame = current[2]
