@@ -80,7 +80,8 @@ def generate(cap, data, video_name):
                     final_json["Assets"][i] = asset2
                     cap.set(1, int(asset2[2]))
                     ret, frame = cap.read()
-                    draw_bounding_box(frame, (asset2[3][0], asset2[3][1], asset2[4][0], asset2[4][1]), labels=[asset2[0]], color='green')
+                    name=asset2[0].replace("RIGHT_","").replace("LEFT_","")
+                    draw_bounding_box(frame, (asset2[3][0], asset2[3][1], asset2[4][0], asset2[4][1]), labels=[name], color='green')
                     os.remove(f"Upload_Images/{video_name}/{video_name}_{str(asset1[2])}_{asset1[0]}_{str(asset1[1])}.jpeg")
                     cv2.imwrite(f"Upload_Images/{video_name}/{video_name}_{str(asset2[2])}_{asset2[0]}_{str(asset2[1])}.jpeg", frame)
                     break
