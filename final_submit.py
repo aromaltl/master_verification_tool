@@ -10,7 +10,10 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 import copy
-from config import config
+
+import yaml
+with open("config.yaml","r") as f:
+    config = yaml.safe_load(f.read())
 
 col11 = sg.Image(key='image')
 Output = sg.Text()

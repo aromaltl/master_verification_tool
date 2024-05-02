@@ -11,7 +11,10 @@ import time
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
-from config import config
+import yaml
+with open("config.yaml","r") as f:
+    config = yaml.safe_load(f.read())
+
 
 """
 LAYOUT DESIGN

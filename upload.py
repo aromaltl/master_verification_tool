@@ -3,7 +3,10 @@ import PySimpleGUI as sg
 import json
 import os
 from opencv_draw_annotation import draw_bounding_box
-from config import config
+
+import yaml
+with open("config.yaml","r") as f:
+    config = yaml.safe_load(f.read())
 
 
 def converting_to_asset_format(data_json, total_frames):
