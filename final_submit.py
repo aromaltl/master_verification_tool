@@ -196,9 +196,9 @@ def final_verify(ip=None, json=None, stream=False,index=0):
             index = max(0, index - 1)
             current = copy.deepcopy(data["Assets"][index])
             output_frame = current[2]
-        if event == 'Previous Frame':
+        if event == 'Previous Frame' or 'Left:' in event::
             output_frame = output_frame - 2
-        if event == "Next Frame":
+        if event == "Next Frame" or event == 'Right:114' or event == "Right:39":
             output_frame = output_frame + 2
 
 
@@ -230,7 +230,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
             data["Assets"][index][7] = int(values['New Pos'][0])
             current[7]=int(values['New Pos'][0])
             save_json(data, json)
-        if event == "Add Info":
+        if event == "Add Info" or "Return" in event or event == "\r":
             data["Assets"][index][5][0] = values["comment"]
             data["Assets"][index][5][1] = values["remark"]
             current = data["Assets"][index][:]
