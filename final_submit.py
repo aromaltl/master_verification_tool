@@ -188,17 +188,17 @@ def final_verify(ip=None, json=None, stream=False,index=0):
 
 
 
-        if event == "Next Asset":
+        if event == "Next Asset" or event == 'Right:114' or event == "Right:39":
             index = min(index + 1, total_assets - 1)
             current = copy.deepcopy(data["Assets"][index])
             output_frame = current[2]
-        if event == 'Previous Asset':
+        if event == 'Previous Asset'  or 'Left:' in event:
             index = max(0, index - 1)
             current = copy.deepcopy(data["Assets"][index])
             output_frame = current[2]
-        if event == 'Previous Frame' or 'Left:' in event::
+        if event == 'Previous Frame':
             output_frame = output_frame - 2
-        if event == "Next Frame" or event == 'Right:114' or event == "Right:39":
+        if event == "Next Frame" :
             output_frame = output_frame + 2
 
 
