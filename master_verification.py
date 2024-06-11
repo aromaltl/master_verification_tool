@@ -57,7 +57,7 @@ PLAY = True
 
 
 # Join two columns
-def asset_select_window(keys, cols):
+def asset_select_window(keys, cols,hide=True):
     '''
     creating window for asset selection
     
@@ -69,12 +69,13 @@ def asset_select_window(keys, cols):
     keys = keys + [""] * (cols - r)
     n = len(keys) // cols
     for hh in range(n):
-        layout.append([sg.Button(keys[x + hh * cols], size=(24, 1), pad=(0, 0)) for x in range(cols)])
+        layout.append([sg.Button(keys[x + hh * cols], size=(32, 1), pad=(0, 0)) for x in range(cols)])
 
-    layout.append([sg.InputText('', key='New_Asset', size=(58, 1)), sg.Button('ADD_NEW_ASSET', size=(18, 1))])  # ,
+    layout.append([sg.InputText('', key='New_Asset', size=(58, 1)),sg.Button('FILTER', size=(18, 1)) ,sg.Button('ADD_NEW_ASSET', size=(18, 1))])  # ,
     win = sg.Window("Select Asset", layout, resizable=True, finalize=True, enable_close_attempted_event=True,
                     element_justification='c', return_keyboard_events=False)
-    win.hide()
+    if hide:
+        win.hide()
     return win
 
 
@@ -289,20 +290,35 @@ def verify(ip=None,CSV=None,output_frame=0):
                     asset_window.UnHide()
                     while True:
                         column, val = asset_window.read()
+                        
+                        if column == "FILTER":
+                            
+                            asset_window.close()
+                            filtered = [fil for fil in assets if val["New_Asset"].lower() in fil.lower()]
+                            
+                            filtered.sort(key=lambda strings: len(strings), reverse=True)
+                            asset_window = asset_select_window(filtered, 6,hide=False)
+                            # asset_window.UnHide()
 
-                        if column == "ADD_NEW_ASSET":
+
+                        elif column == "ADD_NEW_ASSET":
                             data[val["New_Asset"]] = 0
                             asset_window.close()
                             assets.append(val["New_Asset"])
                             assets.sort(key=lambda strings: len(strings), reverse=True)
-                            asset_window = asset_select_window(assets, 6)
-                            asset_window.UnHide()
+                            asset_window = asset_select_window(assets, 6,hide=False)
+                            # asset_window.UnHide()
+
+
 
                         else:
+                           
                             if column != "-WINDOW CLOSE ATTEMPTED-":
                                 PREV_SELECTED_ASSET = column
+                            asset_window.close()
+                            asset_window = asset_select_window(assets, 6)
                             break
-                    asset_window.hide()
+                    # asset_window.hide()
                     if column == "-WINDOW CLOSE ATTEMPTED-":
                         continue
                 event = event if window_read else " "
