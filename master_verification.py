@@ -14,7 +14,7 @@ with open("config.yaml","r") as f:
 from opencv_draw_annotation import draw_bounding_box
 from upload import converting_to_asset_format, generate, confirmation
 from final_submit import final_verify
-from utils import mouse_call
+from utils import mouse_call, extract_for_annotations
 
 
 """
@@ -183,10 +183,9 @@ def verify(ip=None,CSV=None,output_frame=0):
     tab1 = [[col11, sg.Frame(layout=col12, title='Details TO Enter')],
         [sg.Slider(range=(0, 1000), default_value=0, size=(200, 5), tick_interval=500, orientation="h",
                    enable_events=True, key="slider")]]
-    try:
-        os.mkdir("SavedImages")
-    except:
-        pass
+
+
+
     # df = pd.read_csv("https://tlviz.s3.ap-south-1.amazonaws.com/SeekRight/MASTER_VERIFICATION_FILES/assets_sheet.csv")
     # df
     sg.theme('DarkGrey5')
@@ -255,7 +254,12 @@ def verify(ip=None,CSV=None,output_frame=0):
             if len(ip) > 0 and len(CSV) > 0:
                 print('START')
                 cap = cv2.VideoCapture(str(ip))
+                cap2 = cv2.VideoCapture(str(ip))
+                
+                os.makedirs("SavedImages",exist_ok=True)
+                os.makedirs("DeletedImages",exist_ok=True)
                 w,h=int(cap.get(3)), int(cap.get(4))
+                vname = os.path.basename(ip).split(".")[0]
                 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                 window["slider"].update(range=(0, total_frames - 1))
 
@@ -394,6 +398,7 @@ def verify(ip=None,CSV=None,output_frame=0):
             # if (event == "Delete Data" or event == "Delete:119" or event == "\x7f" ) and len(delete_val):
             if ("delete" in event.lower() or event == "\x7f") and len(delete_val):
                 found = 25
+                extract_for_annotations(cap2,output_frame,vname)
                 for x in range(output_frame, total_frames):
                     if x % 2 == 1:
                         continue
@@ -479,7 +484,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                         time.sleep(delay)
 
                     elif del_ast.changed:
-                        del_ast.update(data,output_frame,total_frames)
+                        del_ast.update(data,output_frame,total_frames,cap,vname)
                         frame=addBBox(copy_frame.copy(), output_frame, data)
                         frame = del_ast.highlight(frame)
                         del_ast.changed = False

@@ -1,12 +1,32 @@
 import cv2
 import numpy as np
+import yaml
+import os
+
+
+
+
+
+
+def extract_for_annotations(cap,frame,vname):
+    # total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    for x in range(max(0,frame-6*3),frame+6*3,6):
+        cap.set(1,x)
+        ret,fra = cap.read()
+        if not ret:
+            break 
+        cv2.imwrite(f"DeletedImages/{vname}_{x}.jpeg",fra)
+
+
 
 
 class mouse_call:
-    def __init__(self,) :
+    def __init__(self) :
         self.ast = None
         self.input =None
         self.changed=False
+        # self.cap=cap
+        # self.vname = vname
 
     def highlight(self,img):
         if self.ast is not None:
@@ -20,7 +40,7 @@ class mouse_call:
             self.changed = True
 
 
-    def update(self,data,framno,total_frames):
+    def update(self,data,framno,total_frames,cap,vname):
         if self.input is None:
             return
         event,x,y= self.input
@@ -44,11 +64,12 @@ class mouse_call:
         if (event == cv2.EVENT_MBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN) and self.ast is not None:
             delete_val = self.ast
             found = 25
+            extract_for_annotations(cap,output_frame,vname)
             if event == cv2.EVENT_RBUTTONDOWN:
                 RANGE=range(output_frame+1, total_frames)
             else:
                 RANGE=range(output_frame, total_frames)
-
+            
             for x in RANGE:
                 if x % 2 == 1:
                     continue
