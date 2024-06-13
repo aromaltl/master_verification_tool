@@ -484,7 +484,7 @@ def verify(ip=None,CSV=None,output_frame=0):
                         time.sleep(delay)
 
                     elif del_ast.changed:
-                        del_ast.update(data,output_frame,total_frames,cap,vname)
+                        del_ast.update(data,output_frame,total_frames,cap2,vname)
                         frame=addBBox(copy_frame.copy(), output_frame, data)
                         frame = del_ast.highlight(frame)
                         del_ast.changed = False
