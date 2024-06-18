@@ -15,16 +15,22 @@ import yaml
 with open("config.yaml","r") as f:
     config = yaml.safe_load(f.read())
 
+
+
+
 col11 = sg.Image(key='image')
 Output = sg.Text()
 Input = sg.Text()
 Error = sg.Text()
 Asset = sg.Text()
+
 REMARK = ['Bent', 'Broken', 'Missing', 'Plant Overgrown', 'Paint Worn Off', 'Dirt', 'Not Working', 'Others']
-config["remarks"].sort()
-config["comment"].sort()
+# config["remarks"].sort()
+# config["comment"].sort()
+
 REMARK = config["remarks"]
 COMMENT = config["comment"]
+
 
 
 # col12 = [[sg.Text('ENTER VIDEO PATH')],
@@ -129,8 +135,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
     
     window = sg.Window('Data Verification Toolbox',
                        layout, resizable=True, finalize=True, return_keyboard_events=True, use_default_focus=False)
-    window['comment'].update(values=COMMENT)
-    window['remark'].update(values=REMARK)
+    # window['comment'].update(values=COMMENT)
+    # window['remark'].update(values=REMARK)
     
 
     window.finalize()
@@ -154,10 +160,13 @@ def final_verify(ip=None, json=None, stream=False,index=0):
                 if json is None:
                     json = values['JSON']
             if event == "START":
-                print(ip,index,output_frame,"#########")
+                # print(ip,index,output_frame,"#########")
                 video_name = os.path.basename(ip).replace('.MP4', '')
                 data = load_json(json)
+                # all_assets = set([asst[0].replace("RIGHT_","").replace("LEFT_","") for asst in data["Assets"]])
+                # data["Assets"].sort(key=lambda val: (val[0].replace("RIGHT_","").replace("LEFT_",""),val[2]))
                 data["Assets"].sort(key=lambda val: val[2])
+                
                 for each in  data["Assets"]:
                     if len(each)==6:
                         each.append(0)
@@ -184,9 +193,6 @@ def final_verify(ip=None, json=None, stream=False,index=0):
         
         if not stream:
             continue
-
-
-
 
         if event == "Next Asset" or event == 'Right:114' or event == "Right:39":
             index = min(index + 1, total_assets - 1)
@@ -268,6 +274,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
         image = cv2.resize(image, (1280, 720))
         new_pos.update(value=current[7])
         # print(current[7],current[2])
+        window['comment'].update(values=COMMENT[label] if label in COMMENT else COMMENT['default'])
+        window['remark'].update(values=REMARK[label] if label in REMARK else REMARK['default'])
         if current[7]!=current[2]:
             new_pos.update(value=current[7],text_color='Red')
         else:
