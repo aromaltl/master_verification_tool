@@ -40,3 +40,9 @@ comment:
     - Straight
   Signboard_Hazard_Board:
     - Rectangular_Hazard
+  Street_Light:
+    - Single_Arm
+    - Double_Arm
+    - Triple_Arm
+    - Four_Arm
+  
