@@ -142,7 +142,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
     window.finalize()
     # index = 0
     output_frame = 0
-
+    prev_asset=""
     while True:
         event, values = window.read()
         # print(event,values)
@@ -164,8 +164,8 @@ def final_verify(ip=None, json=None, stream=False,index=0):
                 video_name = os.path.basename(ip).replace('.MP4', '')
                 data = load_json(json)
                 # all_assets = set([asst[0].replace("RIGHT_","").replace("LEFT_","") for asst in data["Assets"]])
-                # data["Assets"].sort(key=lambda val: (val[0].replace("RIGHT_","").replace("LEFT_",""),val[2]))
-                data["Assets"].sort(key=lambda val: val[2])
+                data["Assets"].sort(key=lambda val: (val[0].replace("RIGHT_","").replace("LEFT_",""),val[2]))
+                # data["Assets"].sort(key=lambda val: val[2])
                 
                 for each in  data["Assets"]:
                     if len(each)==6:
@@ -174,6 +174,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
                         each.append(each[2])
                 total_assets = len(data["Assets"])
                 current = data["Assets"][index]
+                # prev_asset = current[0].replace("RIGHT_","").replace("LEFT_","")
                 output_frame = current[2]
                 cap = cv2.VideoCapture(ip)
                 os.makedirs(f"Upload_Images/{video_name}", exist_ok=True)
@@ -193,6 +194,7 @@ def final_verify(ip=None, json=None, stream=False,index=0):
         
         if not stream:
             continue
+
 
         if event == "Next Asset" or event == 'Right:114' or event == "Right:39":
             index = min(index + 1, total_assets - 1)
@@ -274,8 +276,11 @@ def final_verify(ip=None, json=None, stream=False,index=0):
         image = cv2.resize(image, (1280, 720))
         new_pos.update(value=current[7])
         # print(current[7],current[2])
-        window['comment'].update(values=COMMENT[label] if label in COMMENT else COMMENT['default'])
-        window['remark'].update(values=REMARK[label] if label in REMARK else REMARK['default'])
+        if prev_asset!=label:
+            window['comment'].update(values=COMMENT[label] if label in COMMENT else COMMENT['default'])
+            window['remark'].update(values=REMARK[label] if label in REMARK else REMARK['default'])
+            prev_asset=label
+
         if current[7]!=current[2]:
             new_pos.update(value=current[7],text_color='Red')
         else:
