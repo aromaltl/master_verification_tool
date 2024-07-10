@@ -1,8 +1,8 @@
 speed: 1.1
 play_size: [1920, 1080]  # (1280, 720)
 det_loc:
-  default: 6
-  light_nth_last: 12
+  default: 3
+  light_nth_last: 3
   hazard_mark###: 3
 keys:
   right: '@#EWEA'
