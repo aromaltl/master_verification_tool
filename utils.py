@@ -3,19 +3,30 @@ import numpy as np
 import yaml
 import os
 
-
+import json
 
 
 
 
 def extract_for_annotations(cap,frame,vname):
     # total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    data={"Frames":set()}
+    if os.path.exists(f"DeletedImages/{vname}_deleted.json"):
+        with open(f"DeletedImages/{vname}_deleted.json",'r') as f:
+            data = json.load(f)
+        data["Frames"]=set(data["Frames"])
+
     for x in range(max(0,frame-6*3),frame+6*3,6):
-        cap.set(1,x)
-        ret,fra = cap.read()
-        if not ret:
-            break 
-        cv2.imwrite(f"DeletedImages/{vname}_{x}.jpeg",fra)
+        # cap.set(1,x)
+        # ret,fra = cap.read()
+        # if not ret:
+        #     break 
+        # cv2.imwrite(f"DeletedImages/{vname}_{x}.jpeg",fra)
+        data["Frames"].add(x)
+    data["Frames"] = list( data["Frames"])
+    with open(f"DeletedImages/{vname}_deleted.json", 'w') as f:
+        json.dump(data, f)
+
 
 
 

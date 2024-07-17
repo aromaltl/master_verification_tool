@@ -254,8 +254,9 @@ def final_verify(ip=None, json=None, stream=False,index=0):
             save_json(data, json)
 
         if event == "Replace Image":
-            cv2.imwrite(
-                f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg", image)
+            pass
+            # cv2.imwrite(
+            #     f"Upload_Images/{video_name}/{video_name}_{str(current[2])}_{current[0]}_{str(current[1])}.jpeg", image)
 
         if event == "Upload":
             CONFIRM, wait = confirmation("Upload")
